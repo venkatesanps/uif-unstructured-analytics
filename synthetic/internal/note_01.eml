@@ -1,0 +1,23 @@
+From: raman.risk@bank-example.com
+To: merchant-risk-queue@bank-example.com
+Subject: RC-2026-8704: Lone Star Auto Detailing LLC risk review
+Date: Fri, 02 Oct 2026 10:15:00 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Case: RC-2026-8704
+Merchant: Lone Star Auto Detailing LLC (MID 800056789012)
+Analyst: P. Raman
+Review date: 2026-10-02
+
+Risk review summary
+We saw bursts of small-dollar authorizations from a handful of IP ranges. Sit=
+e visit completed; the storefront matches the application. No prior cases are=
+ open on this relationship.
+
+Recommendation: reserve
+Exposure estimate: $350,700.00
+
+P. Raman
+Merchant Risk | 214-555-0187

@@ -1,0 +1,21 @@
+{
+  "file": "internal/note_03.eml",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-1226",
+    "merchant_name": "Maple & Main Bakery LLC",
+    "analyst": "S. Whitfield",
+    "review_date": "2026-09-06",
+    "risk_themes": [
+      "adverse media",
+      "card testing",
+      "high-risk mcc"
+    ],
+    "recommended_action": "escalate",
+    "exposure_estimate": 378100.0
+  },
+  "merchant_id": "M0007",
+  "flags": [],
+  "raw_identifiers": []
+}

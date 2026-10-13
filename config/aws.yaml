@@ -1,0 +1,36 @@
+# AWS runtime. Values come from the task/Lambda environment (set by infra).
+runtime: aws
+region: ${AWS_REGION:-us-east-1}
+
+store:
+  kind: s3
+  bucket: ${UIF_BUCKET}
+  prefix: ${UIF_PREFIX:-uif}
+  kms_key_id: ${UIF_KMS_KEY_ID:-}
+
+ocr:
+  kind: textract
+
+guard:
+  kind: comprehend        # Comprehend PII + the same Luhn/regex pass as local
+  token_salt: ${UIF_TOKEN_SALT}
+
+llm:
+  kind: bedrock
+  bedrock:
+    model_id: ${UIF_BEDROCK_MODEL_ID}   # your approved Claude model or inference profile
+    max_tokens: 4096
+
+warehouse:
+  kind: stage             # NDJSON per table under publish/, loaded by Snowpipe
+  prefix: publish
+
+registry:
+  path: registry          # baked into the image
+
+master_data:
+  path: data/merchant_master.csv   # replace with a Snowflake lookup in Phase 2
+
+thresholds:
+  classify_min_confidence: 0.6
+  default_review_below: 0.8

@@ -1,0 +1,21 @@
+{
+  "file": "internal/note_00.txt",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-9074",
+    "merchant_name": "Sunset Vitamin Co",
+    "analyst": "J. Ortiz",
+    "review_date": "2026-09-05",
+    "risk_themes": [
+      "adverse media",
+      "business model change",
+      "chargeback spike"
+    ],
+    "recommended_action": "monitor",
+    "exposure_estimate": 227900.0
+  },
+  "merchant_id": "M0004",
+  "flags": [],
+  "raw_identifiers": []
+}

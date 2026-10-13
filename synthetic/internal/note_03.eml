@@ -1,0 +1,25 @@
+From: whitfield.risk@bank-example.com
+To: merchant-risk-queue@bank-example.com
+Subject: RC-2026-1226: Maple & Main Bakery LLC risk review
+Date: Sun, 06 Sep 2026 10:15:00 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Case: RC-2026-1226
+Merchant: Maple & Main Bakery LLC (MID 800078901234)
+Analyst: S. Whitfield
+Review date: 2026-09-06
+
+Risk review summary
+Ownership and banking details were confirmed against onboarding records. We s=
+aw bursts of small-dollar authorizations from a handful of IP ranges. A local=
+ news report describes customer complaints about unfulfilled orders. A growin=
+g share of sales is nutraceutical products. No prior cases are open on this r=
+elationship.
+
+Recommendation: escalate
+Exposure estimate: $378,100.00
+
+S. Whitfield
+Merchant Risk | 214-555-0187

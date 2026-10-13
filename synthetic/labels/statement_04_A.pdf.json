@@ -1,0 +1,23 @@
+{
+  "file": "merchant/statement_04_A.pdf",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Northwind Payments",
+    "merchant_legal_name": "Lone Star Auto Detailing LLC",
+    "mid": "800056789012",
+    "statement_period": {
+      "start": "2026-05-01",
+      "end": "2026-05-31"
+    },
+    "gross_volume": 1758208.99,
+    "transaction_count": 71429,
+    "refund_volume": 26612.82,
+    "chargeback_count": 929,
+    "chargeback_volume": 22867.09,
+    "total_fees": 45730.64
+  },
+  "merchant_id": "M0005",
+  "flags": [],
+  "raw_identifiers": []
+}

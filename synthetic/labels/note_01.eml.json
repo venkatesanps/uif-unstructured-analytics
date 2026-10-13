@@ -1,0 +1,19 @@
+{
+  "file": "internal/note_01.eml",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-8704",
+    "merchant_name": "Lone Star Auto Detailing LLC",
+    "analyst": "P. Raman",
+    "review_date": "2026-10-02",
+    "risk_themes": [
+      "card testing"
+    ],
+    "recommended_action": "reserve",
+    "exposure_estimate": 350700.0
+  },
+  "merchant_id": "M0005",
+  "flags": [],
+  "raw_identifiers": []
+}

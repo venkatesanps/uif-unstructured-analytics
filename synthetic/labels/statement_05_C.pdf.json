@@ -1,0 +1,25 @@
+{
+  "file": "merchant/statement_05_C.pdf",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Gulf Coast Card Processing",
+    "merchant_legal_name": "Gulfview Gadget Outlet LLC",
+    "mid": "800099999999",
+    "statement_period": {
+      "start": "2026-06-01",
+      "end": "2026-06-30"
+    },
+    "gross_volume": 247314.34,
+    "transaction_count": 4001,
+    "refund_volume": 2800.94,
+    "chargeback_count": 49,
+    "chargeback_volume": 3028.42,
+    "total_fees": 7189.72
+  },
+  "merchant_id": null,
+  "flags": [
+    "unseen_layout"
+  ],
+  "raw_identifiers": []
+}

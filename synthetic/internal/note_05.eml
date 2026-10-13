@@ -1,0 +1,24 @@
+From: raman.risk@bank-example.com
+To: merchant-risk-queue@bank-example.com
+Subject: RC-2026-7153: Blue Harbor Coffee LLC risk review
+Date: Tue, 06 Oct 2026 10:15:00 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Case: RC-2026-7153
+Merchant: Blue Harbor Coffee LLC (MID 800012345678)
+Analyst: P. Raman
+Review date: 2026-10-06
+
+Risk review summary
+The refund rate has climbed for three straight months. Ownership and banking =
+details were confirmed against onboarding records. Site visit completed; the =
+storefront matches the application. We saw bursts of small-dollar authorizati=
+ons from a handful of IP ranges.
+
+Recommendation: terminate
+Exposure estimate: $115,000.00
+
+P. Raman
+Merchant Risk | 214-555-0187

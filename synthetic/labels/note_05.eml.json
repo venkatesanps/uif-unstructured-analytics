@@ -1,0 +1,20 @@
+{
+  "file": "internal/note_05.eml",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-7153",
+    "merchant_name": "Blue Harbor Coffee LLC",
+    "analyst": "P. Raman",
+    "review_date": "2026-10-06",
+    "risk_themes": [
+      "card testing",
+      "refund abuse"
+    ],
+    "recommended_action": "terminate",
+    "exposure_estimate": 115000.0
+  },
+  "merchant_id": "M0001",
+  "flags": [],
+  "raw_identifiers": []
+}

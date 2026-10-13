@@ -1,0 +1,10 @@
+Case: RC-2026-2018
+Merchant: Gulfview Gadget Outlet LLC (MID 800099999999)
+Analyst: J. Ortiz
+Review date: 2026-10-02
+
+Risk review summary
+No prior cases are open on this relationship. We saw bursts of small-dollar authorizations from a handful of IP ranges. Ownership and banking details were confirmed against onboarding records. The merchant started selling prepaid subscriptions that were not in the application.
+
+Recommendation: approve
+Exposure estimate: $28,300.00

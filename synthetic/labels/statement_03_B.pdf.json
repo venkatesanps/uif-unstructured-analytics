@@ -1,0 +1,25 @@
+{
+  "file": "merchant/statement_03_B.pdf",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Lakeside Merchant Services",
+    "merchant_legal_name": "Sunset Vitamin Co",
+    "mid": "800045678901",
+    "statement_period": {
+      "start": "2026-04-01",
+      "end": "2026-04-30"
+    },
+    "gross_volume": 432900.58,
+    "transaction_count": 4042,
+    "refund_volume": 10908.49,
+    "chargeback_count": 57,
+    "chargeback_volume": 6104.44,
+    "total_fees": 12024.58
+  },
+  "merchant_id": "M0004",
+  "flags": [
+    "scanned"
+  ],
+  "raw_identifiers": []
+}

@@ -1,0 +1,38 @@
+[project]
+name = "uif"
+version = "0.1.0"
+description = "Unstructured-data intelligence framework for merchant services: any document -> evidence-linked facts -> analytics"
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic>=2.6",
+  "pyyaml>=6.0",
+  "duckdb>=1.0",
+  "pdfplumber>=0.11",
+  "requests>=2.31",
+]
+
+[project.optional-dependencies]
+synth = ["reportlab>=4.0"]
+ocr = ["pytesseract>=0.3", "pdf2image>=1.17"]
+pii = ["presidio-analyzer>=2.2"]
+aws = ["boto3>=1.34"]
+review = ["streamlit>=1.35"]
+dev = ["pytest>=8.0", "moto[s3]>=5.0", "reportlab>=4.0", "boto3>=1.34"]
+
+[project.scripts]
+uif = "uif.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+  "aws: needs moto or a real AWS account",
+  "ollama: needs a running Ollama server",
+]

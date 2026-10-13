@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.uif/
+*.egg-info/
+.env
+# real documents never live in the repo
+landing/
+inbox/

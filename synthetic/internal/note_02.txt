@@ -1,0 +1,10 @@
+Case: RC-2026-2590
+Merchant: Copperleaf Travel Partners Inc (MID 800067890123)
+Analyst: K. Nguyen
+Review date: 2026-10-02
+
+Risk review summary
+Monthly processing volume increased about 3x against the underwriting estimate. Settlement funding has been on schedule. Ownership and banking details were confirmed against onboarding records. Owner SSN 123-45-6789 was re-verified.
+
+Recommendation: reduce_limit
+Exposure estimate: $171,600.00

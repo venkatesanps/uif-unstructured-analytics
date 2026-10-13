@@ -1,0 +1,62 @@
+{
+  "doc_type": "risk_analyst_note",
+  "version": "1.0.0",
+  "prompt_version": "1.0.0",
+  "description": "Internal note or email from a risk analyst reviewing a merchant: findings, themes, recommended action.",
+  "classify": {
+    "keywords": ["analyst", "recommendation", "case", "exposure", "risk", "review"]
+  },
+  "fields": {
+    "case_id": {
+      "type": "string",
+      "description": "Risk case identifier, e.g. RC-2026-0412.",
+      "hints": ["\\b(RC-\\d{4}-\\d{4})\\b"]
+    },
+    "merchant_name": {
+      "type": "string",
+      "description": "Merchant under review.",
+      "hints": ["^Merchant:\\s*(.+?)\\s*(?:\\(|$)"]
+    },
+    "analyst": {
+      "type": "string",
+      "description": "Analyst who wrote the note.",
+      "hints": ["^Analyst:\\s*(.+)$"]
+    },
+    "review_date": {
+      "type": "date",
+      "description": "Date of the review (ISO).",
+      "hints": ["Review date:\\s*(\\d{4}-\\d{2}-\\d{2})"]
+    },
+    "risk_themes": {
+      "type": "string_list",
+      "description": "Risk themes raised, from the controlled vocabulary.",
+      "hint_confidence": 0.8,
+      "vocabulary": {
+        "chargeback spike": ["chargeback ratio", "spike in chargebacks", "chargebacks rose", "dispute rate"],
+        "refund abuse": ["refund rate", "excessive refunds", "refunds exceed"],
+        "business model change": ["started selling", "new product line", "changed its business", "pivot"],
+        "adverse media": ["news report", "lawsuit", "complaints online", "bbb complaints"],
+        "card testing": ["card testing", "small-dollar authorizations"],
+        "volume spike": ["volume jumped", "volume spike", "processing volume increased"],
+        "delayed delivery": ["delivery delays", "pre-orders", "not yet shipped"],
+        "high-risk mcc": ["nutraceutical", "cbd", "travel booking"]
+      }
+    },
+    "recommended_action": {
+      "type": "enum",
+      "values": ["approve", "monitor", "reserve", "reduce_limit", "terminate", "escalate"],
+      "description": "Analyst's recommended action.",
+      "review_below": 0.85,
+      "hints": ["Recommendation:\\s*([a-z_]+)"]
+    },
+    "exposure_estimate": {
+      "type": "money",
+      "description": "Estimated financial exposure in USD.",
+      "hints": ["Exposure estimate:\\s*(\\$?[\\d,]+(?:\\.\\d{2})?)"]
+    }
+  },
+  "required": ["merchant_name", "recommended_action"],
+  "rules": [
+    {"id": "exposure_nonneg", "check": "gte", "left": "exposure_estimate", "value": 0}
+  ]
+}

@@ -1,0 +1,43 @@
+# Local services for the "aws-like" local loop. The plain local runtime needs none of these.
+#   ollama     - local model server (on an M1 Mac, run Ollama natively instead for Metal GPU)
+#   localstack - S3/SQS/Step Functions/Lambda emulation for integration runs against config/aws.yaml
+#   langfuse   - optional tracing UI for model calls
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes: ["ollama:/root/.ollama"]
+    profiles: ["ollama"]
+
+  localstack:
+    image: localstack/localstack:latest
+    ports: ["4566:4566"]
+    environment:
+      SERVICES: s3,sqs,events,stepfunctions,lambda,iam,logs
+      AWS_DEFAULT_REGION: us-east-1
+    volumes: ["localstack:/var/lib/localstack"]
+
+  langfuse:
+    image: langfuse/langfuse:2
+    ports: ["3000:3000"]
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      NEXTAUTH_SECRET: local-only-secret
+      SALT: local-only-salt
+      NEXTAUTH_URL: http://localhost:3000
+    depends_on: [langfuse-db]
+    profiles: ["tracing"]
+
+  langfuse-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse
+      POSTGRES_DB: langfuse
+    volumes: ["langfuse-db:/var/lib/postgresql/data"]
+    profiles: ["tracing"]
+
+volumes:
+  ollama: {}
+  localstack: {}
+  langfuse-db: {}

@@ -1,0 +1,23 @@
+{
+  "file": "internal/note_02.txt",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-2590",
+    "merchant_name": "Copperleaf Travel Partners Inc",
+    "analyst": "K. Nguyen",
+    "review_date": "2026-10-02",
+    "risk_themes": [
+      "volume spike"
+    ],
+    "recommended_action": "reduce_limit",
+    "exposure_estimate": 171600.0
+  },
+  "merchant_id": "M0006",
+  "flags": [
+    "planted_ssn"
+  ],
+  "raw_identifiers": [
+    "123-45-6789"
+  ]
+}

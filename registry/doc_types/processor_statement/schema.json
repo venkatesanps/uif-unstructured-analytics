@@ -1,0 +1,70 @@
+{
+  "doc_type": "processor_statement",
+  "version": "1.0.0",
+  "prompt_version": "1.0.0",
+  "description": "Monthly merchant processing statement from an acquirer or processor (often a prior processor, submitted at onboarding).",
+  "classify": {
+    "keywords": ["statement", "merchant id", "transactions", "chargeback", "fees", "processing", "deposit", "interchange"]
+  },
+  "fields": {
+    "processor_name": {
+      "type": "string",
+      "description": "Company that issued the statement.",
+      "hints": ["^(?:Processor|Issued by|Acquirer):\\s*(.+)$"]
+    },
+    "merchant_legal_name": {
+      "type": "string",
+      "description": "Merchant's legal business name.",
+      "hints": ["^(?:Merchant Name|Business Name|Merchant Legal Name):\\s*(.+)$"]
+    },
+    "mid": {
+      "type": "string",
+      "description": "Merchant identifier (MID) printed on the statement.",
+      "hints": ["(?:Merchant ID(?: \\(MID\\))?|MID|Merchant Number):\\s*([\\d -]{8,22}\\d)"]
+    },
+    "statement_period": {
+      "type": "date_range",
+      "description": "Start and end date of the statement period.",
+      "hints": ["(?:Statement Period|Billing Period|Period):\\s*(.+?\\d{4}\\s+(?:to|through|-)\\s+.+?\\d{4})"]
+    },
+    "gross_volume": {
+      "type": "money",
+      "description": "Total gross card sales volume for the period, in USD.",
+      "review_below": 0.85,
+      "hints": ["(?:Total Gross Sales|Total Sales Volume|Gross Sales|Total Volume)[:\\s]+(\\$?[\\d,]+\\.\\d{2})"]
+    },
+    "transaction_count": {
+      "type": "integer",
+      "description": "Number of sales transactions in the period.",
+      "hints": ["(?:Total Transactions|Number of Transactions|Transaction Count|Sales Count):\\s*([\\d,]+)"]
+    },
+    "refund_volume": {
+      "type": "money",
+      "description": "Total refunds/credits issued, in USD.",
+      "hints": ["(?:Refunds|Credits|Returns)[:\\s]+\\(?(\\$?[\\d,]+\\.\\d{2})\\)?"]
+    },
+    "chargeback_count": {
+      "type": "integer",
+      "description": "Number of chargebacks/disputes received.",
+      "review_below": 0.85,
+      "hints": ["(?:Chargebacks|Chargeback Count|Disputes Received|Disputes):\\s*([\\d,]+)\\b(?!\\.)"]
+    },
+    "chargeback_volume": {
+      "type": "money",
+      "description": "Dollar amount of chargebacks/disputes, in USD.",
+      "hints": ["(?:Chargeback Amount|Dispute Amount|Chargeback Volume)[:\\s]+(\\$?[\\d,]+\\.\\d{2})"]
+    },
+    "total_fees": {
+      "type": "money",
+      "description": "Total processing fees charged for the period, in USD.",
+      "hints": ["(?:Total Fees|Total Processing Fees|Fees Charged)[:\\s]+(\\$?[\\d,]+\\.\\d{2})"]
+    }
+  },
+  "required": ["statement_period", "gross_volume"],
+  "rules": [
+    {"id": "gross_nonneg", "check": "gte", "left": "gross_volume", "value": 0},
+    {"id": "cb_le_txn", "check": "lte", "left": "chargeback_count", "right": "transaction_count"},
+    {"id": "refunds_le_gross", "check": "lte", "left": "refund_volume", "right": "gross_volume"},
+    {"id": "fees_le_gross", "check": "lte", "left": "total_fees", "right": "gross_volume"}
+  ]
+}

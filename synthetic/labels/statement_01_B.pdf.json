@@ -1,0 +1,27 @@
+{
+  "file": "merchant/statement_01_B.pdf",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Lakeside Merchant Services",
+    "merchant_legal_name": "Ridgeline Outdoor Supply Inc",
+    "mid": "800023456789",
+    "statement_period": {
+      "start": "2026-02-01",
+      "end": "2026-02-28"
+    },
+    "gross_volume": 683612.49,
+    "transaction_count": 26056,
+    "refund_volume": 4315.2,
+    "chargeback_count": 211,
+    "chargeback_volume": 5535.76,
+    "total_fees": 19165.43
+  },
+  "merchant_id": "M0002",
+  "flags": [
+    "planted_pan"
+  ],
+  "raw_identifiers": [
+    "4111111111111111"
+  ]
+}

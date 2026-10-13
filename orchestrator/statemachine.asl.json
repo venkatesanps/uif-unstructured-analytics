@@ -1,0 +1,88 @@
+{
+  "Comment": "UIF document pipeline. Same step order as src/uif/runner.py. Light steps on Lambda, heavy steps (normalize, extract) on ECS Fargate. ${...} values are substituted by infra.",
+  "StartAt": "Intake",
+  "States": {
+    "Intake": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${StepFunctionArn}", "Payload": { "step": "intake", "detail.$": "$.detail" } },
+      "ResultSelector": { "doc_id.$": "$.Payload.doc_id", "duplicate.$": "$.Payload.duplicate" },
+      "Retry": [{ "ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 5, "MaxAttempts": 3, "BackoffRate": 2 }],
+      "Next": "IsDuplicate"
+    },
+    "IsDuplicate": {
+      "Type": "Choice",
+      "Choices": [{ "Variable": "$.duplicate", "BooleanEquals": true, "Next": "Done" }],
+      "Default": "Normalize"
+    },
+    "Normalize": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "Cluster": "${ClusterArn}", "TaskDefinition": "${HeavyTaskDefArn}", "LaunchType": "FARGATE",
+        "NetworkConfiguration": { "AwsvpcConfiguration": { "Subnets": ${PrivateSubnets}, "SecurityGroups": ${SecurityGroups}, "AssignPublicIp": "DISABLED" } },
+        "Overrides": { "ContainerOverrides": [{ "Name": "uif", "Command": ["python", "-m", "uif.cli", "step", "normalize"],
+          "Environment": [{ "Name": "DOC_ID", "Value.$": "$.doc_id" }] }] }
+      },
+      "ResultPath": null,
+      "Retry": [{ "ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 10, "MaxAttempts": 2, "BackoffRate": 2 }],
+      "Next": "Guard"
+    },
+    "Guard": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${StepFunctionArn}", "Payload": { "step": "guard", "doc_id.$": "$.doc_id" } },
+      "ResultSelector": { "halt.$": "$.Payload.halt" },
+      "ResultPath": "$.guard",
+      "Next": "Quarantined?"
+    },
+    "Quarantined?": {
+      "Type": "Choice",
+      "Choices": [{ "Variable": "$.guard.halt", "BooleanEquals": true, "Next": "Quarantine" }],
+      "Default": "Classify"
+    },
+    "Quarantine": { "Type": "Fail", "Error": "Quarantined", "Cause": "Sensitivity guard could not scan the document" },
+    "Classify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${StepFunctionArn}", "Payload": { "step": "classify", "doc_id.$": "$.doc_id" } },
+      "ResultPath": null,
+      "Next": "Extract"
+    },
+    "Extract": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "Cluster": "${ClusterArn}", "TaskDefinition": "${HeavyTaskDefArn}", "LaunchType": "FARGATE",
+        "NetworkConfiguration": { "AwsvpcConfiguration": { "Subnets": ${PrivateSubnets}, "SecurityGroups": ${SecurityGroups}, "AssignPublicIp": "DISABLED" } },
+        "Overrides": { "ContainerOverrides": [{ "Name": "uif", "Command": ["python", "-m", "uif.cli", "step", "extract"],
+          "Environment": [{ "Name": "DOC_ID", "Value.$": "$.doc_id" }] }] }
+      },
+      "ResultPath": null,
+      "Retry": [{ "ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 20, "MaxAttempts": 3, "BackoffRate": 2 }],
+      "Next": "Resolve"
+    },
+    "Resolve": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${StepFunctionArn}", "Payload": { "step": "resolve", "doc_id.$": "$.doc_id" } },
+      "ResultPath": null,
+      "Next": "Validate"
+    },
+    "Validate": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${StepFunctionArn}", "Payload": { "step": "validate", "doc_id.$": "$.doc_id" } },
+      "ResultPath": null,
+      "Next": "Publish"
+    },
+    "Publish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${StepFunctionArn}", "Payload": { "step": "publish", "doc_id.$": "$.doc_id" } },
+      "ResultPath": null,
+      "Next": "Done"
+    },
+    "Done": { "Type": "Succeed" }
+  }
+}

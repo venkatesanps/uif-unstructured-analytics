@@ -1,0 +1,10 @@
+Case: RC-2026-9074
+Merchant: Sunset Vitamin Co (MID 800045678901)
+Analyst: J. Ortiz
+Review date: 2026-09-05
+
+Risk review summary
+No prior cases are open on this relationship. Ownership and banking details were confirmed against onboarding records. A local news report describes customer complaints about unfulfilled orders. The merchant started selling prepaid subscriptions that were not in the application. The chargeback ratio reached 3.0% last month, well above the program threshold.
+
+Recommendation: monitor
+Exposure estimate: $227,900.00

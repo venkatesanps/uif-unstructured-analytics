@@ -1,0 +1,20 @@
+{
+  "file": "internal/note_04.txt",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-2018",
+    "merchant_name": "Gulfview Gadget Outlet LLC",
+    "analyst": "J. Ortiz",
+    "review_date": "2026-10-02",
+    "risk_themes": [
+      "business model change",
+      "card testing"
+    ],
+    "recommended_action": "approve",
+    "exposure_estimate": 28300.0
+  },
+  "merchant_id": null,
+  "flags": [],
+  "raw_identifiers": []
+}

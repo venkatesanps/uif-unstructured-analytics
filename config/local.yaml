@@ -1,0 +1,34 @@
+# Laptop runtime. Synthetic or fully redacted documents only.
+runtime: local
+
+store:
+  kind: local
+  root: ${UIF_STORE:-.uif/store}
+
+ocr:
+  kind: local            # pdfplumber for native PDFs, tesseract CLI for scans and images
+
+guard:
+  kind: regex            # Luhn-checked PAN, SSN, bank account, email, phone
+  token_salt: ${UIF_TOKEN_SALT:-local-dev-salt}
+
+llm:
+  kind: ${UIF_LLM:-rules}   # rules = offline deterministic baseline; ollama = local model
+  ollama:
+    host: ${OLLAMA_HOST:-http://localhost:11434}
+    model: ${OLLAMA_MODEL:-hermes3:latest}
+    timeout_s: 180
+
+warehouse:
+  kind: duckdb
+  path: ${UIF_DUCKDB:-.uif/uif.duckdb}
+
+registry:
+  path: registry
+
+master_data:
+  path: data/merchant_master.csv
+
+thresholds:
+  classify_min_confidence: 0.6
+  default_review_below: 0.8
