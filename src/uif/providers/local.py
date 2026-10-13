@@ -82,6 +82,37 @@ def _split_pages(text: str) -> list[Page]:
     return [Page(page=i + 1, text=c.strip()) for i, c in enumerate(chunks) if c.strip()]
 
 
+def email_pages(data: bytes, attachment_to_pages) -> tuple[list[Page], str]:
+    """Email body becomes page 1; each attachment is normalized with `attachment_to_pages`
+    (local OCR or Textract) and appended, with a header naming the attachment so evidence
+    quotes and reviewers can tell which file a page came from."""
+    msg = email.message_from_bytes(data, policy=email.policy.default)
+    header = "\n".join(f"{h}: {msg[h]}" for h in ("From", "To", "Date", "Subject") if msg[h])
+    body = msg.get_body(preferencelist=("plain", "html"))
+    content = body.get_content() if body else ""
+    if body is not None and body.get_content_type() == "text/html":
+        content = _strip_html(content)
+    pages = [Page(page=1, text=f"{header}\n\n{content}")]
+    methods = {"email"}
+    for part in msg.iter_attachments():
+        ctype = part.get_content_type()
+        name = part.get_filename() or f"attachment-{len(pages)}"
+        payload = part.get_content()
+        if isinstance(payload, str):
+            payload = payload.encode()
+        elif not isinstance(payload, (bytes, bytearray)):  # nested message/rfc822
+            payload, ctype = bytes(payload), "message/rfc822"
+        try:
+            sub, method = attachment_to_pages(bytes(payload), ctype, name)
+        except NotImplementedError:
+            pages.append(Page(page=len(pages) + 1, text=f"[attachment: {name}] unsupported type {ctype}; not read"))
+            continue
+        methods.add(method)
+        for p in sub:
+            pages.append(Page(page=len(pages) + 1, text=f"[attachment: {name}, page {p.page}]\n{p.text}"))
+    return pages, "+".join(sorted(methods))
+
+
 class LocalOCR:
     """Native PDFs via pdfplumber; scans and images via the tesseract CLI if installed."""
 
@@ -119,13 +150,7 @@ class LocalOCR:
                 tmp.flush()
                 return [Page(page=1, text=self._tesseract_image(tmp.name))], "tesseract"
         if mime_type == "message/rfc822":
-            msg = email.message_from_bytes(data, policy=email.policy.default)
-            header = "\n".join(f"{h}: {msg[h]}" for h in ("From", "To", "Date", "Subject") if msg[h])
-            body = msg.get_body(preferencelist=("plain", "html"))
-            content = body.get_content() if body else ""
-            if body is not None and body.get_content_type() == "text/html":
-                content = _strip_html(content)
-            return [Page(page=1, text=f"{header}\n\n{content}")], "email"
+            return email_pages(data, self.to_pages)
         if mime_type == "text/html":
             return _split_pages(_strip_html(data.decode("utf-8", "replace"))), "html"
         if mime_type.startswith("text/") or mime_type in ("application/json",):
@@ -137,7 +162,9 @@ class LocalOCR:
 
 # --------------------------------------------------------------------------- guard
 
-_PAN = re.compile(r"(?<![\d-])(?:\d[ -]?){12,18}\d(?![\d-])")
+# A card number is a whole run of digits: it may not start or end inside a longer grouped run
+# (USPS tracking numbers are 22 digits in groups of 4, and a 16-digit window can pass Luhn).
+_PAN = re.compile(r"(?<![\d-])(?<!\d[ -])(?:\d[ -]?){12,18}\d(?![\d-])(?![ -]\d{3})")
 _SSN = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 _EMAIL = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 _PHONE = re.compile(r"(?<!\d)(?:\+1[ .-]?)?\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}(?!\d)")
@@ -240,6 +267,19 @@ class RulesExtractor:
                     fields[name] = {"value": found, "page": first[0], "quote": first[1],
                                     "confidence": spec.get("hint_confidence", 0.75)}
                 continue
+            if spec["type"] == "enum" and spec.get("vocabulary"):
+                best = None  # earliest phrase in reading order decides the value
+                for page in pages:
+                    low = page.text.lower()
+                    for value, words in spec["vocabulary"].items():
+                        for w in words:
+                            i = low.find(w.lower())
+                            if i != -1 and (best is None or (page.page, i) < best[:2]):
+                                best = (page.page, i, value, _sentence_around(page.text, i, i + len(w)))
+                if best:
+                    fields[name] = {"value": best[2], "page": best[0], "quote": best[3],
+                                    "confidence": spec.get("hint_confidence", 0.8)}
+                continue
             for pattern in spec.get("hints", []):
                 rx = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
                 hit = next(((p, m) for p in pages for m in [rx.search(p.text)] if m), None)
@@ -306,7 +346,9 @@ class OllamaLLM:
 class DuckDBWarehouse:
     """Local stand-in for Snowflake CORE. Rows are upserted by key; nested values stored as JSON."""
 
-    def __init__(self, path: str):
+    REFERENCE_TABLES = {"reason_codes": "ref_reason_code", "dispute_outcomes": "dispute_outcome"}
+
+    def __init__(self, path: str, reference_dir: str | None = None):
         import duckdb
 
         Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -317,6 +359,17 @@ class DuckDBWarehouse:
         ddl = repo_root() / "sql" / "duckdb" / "core.sql"
         if ddl.exists():
             self.con.execute(ddl.read_text())
+        if reference_dir:
+            self.load_reference(reference_dir)
+
+    def load_reference(self, reference_dir: str) -> None:
+        """Refresh reference tables from CSVs (Snowflake: REF_* tables maintained by their owners)."""
+        for name, table in self.REFERENCE_TABLES.items():
+            csv_path = Path(reference_dir) / f"{name}.csv"
+            if csv_path.exists():
+                self.con.execute(f"DELETE FROM {table}")
+                self.con.execute(f"INSERT INTO {table} SELECT * FROM read_csv(?, header=true, all_varchar=true)",
+                                 [str(csv_path)])
 
     def upsert(self, table: str, rows: list[dict[str, Any]], key: list[str]) -> int:
         if not rows:

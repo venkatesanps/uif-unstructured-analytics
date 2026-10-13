@@ -55,6 +55,16 @@ class Context:
                 master = list(csv.DictReader(fh))
         return cls(cfg, build_providers(cfg), Registry(cfg["registry"]["path"]), master)
 
+    _refs: dict[str, list[dict[str, str]]] = field(default_factory=dict)
+
+    def reference(self, name: str) -> list[dict[str, str]]:
+        """Lookup table from <reference.path>/<name>.csv (e.g. reason_codes)."""
+        if name not in self._refs:
+            path = Path((self.cfg.get("reference") or {}).get("path", "")) / f"{name}.csv"
+            with open(path, newline="") as fh:
+                self._refs[name] = list(csv.DictReader(fh))
+        return self._refs[name]
+
     @property
     def store(self):
         return self.providers.store

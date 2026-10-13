@@ -19,8 +19,12 @@ Inputs to collect first (ask if missing): type name (snake_case), source group (
    - each field: `type`, `description`, optional `review_below` (use 0.85 for money/decision fields),
      `hints` (regex with ONE capture group, for the offline baseline), `values` for enums,
      `vocabulary` for string_list.
-   - `required` and cross-field `rules` (lte/gte/between/in). Every money field should sit in at least
-     one rule; rules are what catch a model that obeyed injected text.
+   - `vocabulary` also works on `enum` fields whose value is a category the text never states
+     verbatim (see `dispute_rebuttal.rebuttal_basis`); the validator then checks the quote for that
+     category's phrases, and every `string_list` item must have its own phrase in the document.
+   - `required` and cross-field `rules` (lte/gte/between/in, plus `in_ref` / `ref_pair` against a
+     lookup in `data/reference/<name>.csv`). Every money field should sit in at least one rule; rules
+     are what catch a model that obeyed injected text.
    - `version` and `prompt_version` start at 1.0.0.
 3. **Write `prompt.md`:** domain guidance only (what the field means, common label variants, sign
    conventions). Never put output-format instructions here; `llm_common.py` owns those.

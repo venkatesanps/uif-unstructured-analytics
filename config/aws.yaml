@@ -31,6 +31,9 @@ registry:
 master_data:
   path: data/merchant_master.csv   # replace with a Snowflake lookup in Phase 2
 
+reference:
+  path: data/reference             # baked into the image; mirrored as UIF_CORE.REF_* tables
+
 thresholds:
   classify_min_confidence: 0.6
   default_review_below: 0.8

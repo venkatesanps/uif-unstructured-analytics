@@ -35,7 +35,8 @@ def load_config(runtime: str | None = None, path: str | Path | None = None) -> d
     cfg.setdefault("runtime", runtime)
     # Resolve relative local paths against the repo root.
     root = repo_root()
-    for section, key in [("store", "root"), ("warehouse", "path"), ("registry", "path"), ("master_data", "path")]:
+    for section, key in [("store", "root"), ("warehouse", "path"), ("registry", "path"), ("master_data", "path"),
+                         ("reference", "path")]:
         sec = cfg.get(section) or {}
         if sec.get(key) and not str(sec[key]).startswith(("s3://", "/")):
             sec[key] = str(root / sec[key])

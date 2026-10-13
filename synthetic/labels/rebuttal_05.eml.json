@@ -1,0 +1,27 @@
+{
+  "file": "dispute/rebuttal_05.eml",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "merchant_id": null,
+  "fields": {
+    "case_number": "CB-2026-459279",
+    "merchant_legal_name": "Maple & Main Bakery LLC",
+    "mid": null,
+    "card_network": "visa",
+    "reason_code": "13.2",
+    "dispute_amount": 1499.64,
+    "transaction_date": "2026-08-16",
+    "order_number": "ORD-44702",
+    "evidence_types": [
+      "customer communication",
+      "refund policy"
+    ],
+    "rebuttal_basis": "cancellation_not_received"
+  },
+  "flags": [
+    "email_attachments",
+    "unseen_layout"
+  ],
+  "missing_required_evidence": [],
+  "raw_identifiers": []
+}

@@ -17,6 +17,7 @@ synth:
 
 run:
 	$(BIN)/uif run synthetic/merchant --source merchant --system onboarding_portal --llm $(LLM)
+	$(BIN)/uif run synthetic/dispute --source merchant --system disputes_portal --llm $(LLM)
 	$(BIN)/uif run synthetic/internal --source internal --system case_mgmt --llm $(LLM)
 	$(BIN)/uif run synthetic/external --source external --system web --llm $(LLM)
 

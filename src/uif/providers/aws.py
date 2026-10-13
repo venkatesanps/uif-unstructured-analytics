@@ -79,6 +79,10 @@ class TextractOCR:
         return [Page(page=p, text="\n".join(lines)) for p, lines in sorted(by_page.items())]
 
     def to_pages(self, data: bytes, mime_type: str, file_name: str) -> tuple[list[Page], str]:
+        if mime_type == "message/rfc822":  # body as text, attachments through Textract
+            from uif.providers.local import email_pages
+
+            return email_pages(data, self.to_pages)
         if not (mime_type == "application/pdf" or mime_type.startswith("image/")):
             from uif.providers.local import LocalOCR  # text, email and html need no OCR
 
@@ -89,7 +93,7 @@ class TextractOCR:
         except self.textract.exceptions.UnsupportedDocumentException:
             if not self.store:
                 raise
-        key = f"ocr-staging/{file_name}"
+        key = f"restricted/ocr-staging/{file_name}"  # raw bytes: stays inside the PCI boundary
         self.store.put_bytes(key, data)
         job = self.textract.start_document_text_detection(
             DocumentLocation={"S3Object": {"Bucket": self.store.bucket, "Name": self.store._k(key)}})

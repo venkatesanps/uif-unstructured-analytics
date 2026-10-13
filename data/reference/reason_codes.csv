@@ -1,0 +1,8 @@
+network,reason_code,category,description,required_evidence
+visa,10.4,fraud,Other Fraud - Card-Absent Environment,avs/cvv match;3ds authentication;ip/device match;prior undisputed purchases
+visa,13.1,not_received,Merchandise/Services Not Received,proof of delivery;invoice/receipt
+visa,13.2,cancelled_recurring,Cancelled Recurring Transaction,customer communication;refund policy
+visa,13.3,not_as_described,Not as Described or Defective Merchandise,invoice/receipt;customer communication;refund policy
+mastercard,4837,fraud,No Cardholder Authorization,avs/cvv match;3ds authentication;ip/device match
+mastercard,4853,not_as_described,Cardholder Dispute - Not as Described,invoice/receipt;customer communication;refund policy
+mastercard,4855,not_received,Goods or Services Not Provided,proof of delivery;invoice/receipt

@@ -39,7 +39,10 @@ def grounded(quote: str | None, page_text: str | None) -> bool:
     return bool(quote) and bool(page_text) and squash(quote) in squash(page_text)
 
 
-def value_in_quote(data_type: str, norm: Any, quote: str) -> bool:
+def value_in_quote(data_type: str, norm: Any, quote: str, spec: dict | None = None) -> bool:
+    vocab = (spec or {}).get("vocabulary")
+    if data_type == "enum" and vocab:  # category value: the quote must carry one of its phrases
+        return any(squash(w) in squash(quote) for w in vocab.get(str(norm), []))
     if data_type in ("money", "integer", "percent"):
         nums = []
         for tok in _NUM.findall(quote):
@@ -52,13 +55,28 @@ def value_in_quote(data_type: str, norm: Any, quote: str) -> bool:
     return True  # dates, ranges and lists are format-shifted; grounding of the quote is the check
 
 
-def check_rule(rule: dict[str, Any], values: dict[str, Any]) -> bool | None:
-    """None = not evaluable (an operand is missing)."""
+def check_rule(rule: dict[str, Any], values: dict[str, Any], reference=None) -> bool | None:
+    """None = not evaluable (an operand is missing). `reference(name)` returns a lookup table
+    (list of dicts) for the in_ref / ref_pair checks."""
+    op = rule["check"]
+    if op in ("in_ref", "ref_pair"):
+        if reference is None:
+            return None
+        table = reference(rule["ref"])
+        left = values.get(rule["left"])
+        if left is None:
+            return None
+        if op == "in_ref":
+            return str(left).lower() in {r[rule["ref_column"]].lower() for r in table}
+        right = values.get(rule["right"])
+        if right is None:
+            return None
+        lc, rc = rule["ref_columns"]
+        return (str(left).lower(), str(right).lower()) in {(r[lc].lower(), r[rc].lower()) for r in table}
     left = values.get(rule["left"])
     right = values.get(rule["right"]) if "right" in rule else rule.get("value")
     if left is None or right is None:
         return None
-    op = rule["check"]
     if op == "lte":
         return left <= right
     if op == "gte":
@@ -99,8 +117,18 @@ def run(ctx: Context, doc_id: str) -> StepResult:
             reasons[name].append("unparseable")
         if not grounded(fv.quote, pages.get(fv.page or -1)):
             reasons[name].append("not_grounded")
-        elif norm is not None and not value_in_quote(ftype, norm, fv.quote or ""):
+        elif norm is not None and not value_in_quote(ftype, norm, fv.quote or "", dt.fields[name]):
             reasons[name].append("value_not_in_quote")
+        vocab = dt.fields[name].get("vocabulary")
+        if ftype == "string_list" and vocab and norm:
+            # one quote can't vouch for a whole list: every item needs its own phrase in the document
+            doc_text = squash(" ".join(pages.values()))
+            known = {k.lower(): v for k, v in vocab.items()}
+            for item in norm:
+                if item not in known:
+                    reasons[name].append(f"item_not_in_vocabulary:{item}")
+                elif not any(squash(w) in doc_text for w in known[item]):
+                    reasons[name].append(f"item_not_in_document:{item}")
         if fv.confidence < dt.review_below(name, ctx.default_review_below):
             reasons[name].append("low_confidence")
         if ftype == "enum" and dt.fields[name].get("values") and norm not in dt.fields[name]["values"]:
@@ -108,7 +136,7 @@ def run(ctx: Context, doc_id: str) -> StepResult:
 
     rule_failures = []
     for rule in dt.rules:
-        if check_rule(rule, norm_values) is False:
+        if check_rule(rule, norm_values, ctx.reference) is False:
             rule_failures.append(rule["id"])
             for f in (rule.get("left"), rule.get("right")):
                 if f in reasons:

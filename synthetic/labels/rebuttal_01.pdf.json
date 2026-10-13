@@ -1,0 +1,27 @@
+{
+  "file": "dispute/rebuttal_01.pdf",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "merchant_id": "M0003",
+  "fields": {
+    "case_number": "CB-2026-434088",
+    "merchant_legal_name": "Pinecrest Dental Group PLLC",
+    "mid": "800034567890",
+    "card_network": "mastercard",
+    "reason_code": "4837",
+    "dispute_amount": 1552.9,
+    "transaction_date": "2026-08-23",
+    "order_number": "ORD-26448",
+    "evidence_types": [
+      "avs/cvv match",
+      "ip/device match",
+      "prior undisputed purchases"
+    ],
+    "rebuttal_basis": "authorized"
+  },
+  "flags": [],
+  "missing_required_evidence": [
+    "3ds authentication"
+  ],
+  "raw_identifiers": []
+}

@@ -29,6 +29,9 @@ registry:
 master_data:
   path: data/merchant_master.csv
 
+reference:
+  path: data/reference        # <name>.csv -> lookup tables for schema rules and marts
+
 thresholds:
   classify_min_confidence: 0.6
   default_review_below: 0.8

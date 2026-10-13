@@ -88,3 +88,51 @@ CREATE OR REPLACE MASKING POLICY UIF_CORE.MASK_EVIDENCE AS (val STRING) RETURNS 
        ELSE '***' END;
 ALTER TABLE UIF_CORE.EXTRACTED_FACT MODIFY COLUMN evidence_quote SET MASKING POLICY UIF_CORE.MASK_EVIDENCE;
 ALTER TABLE UIF_CORE.DOC_CHUNK      MODIFY COLUMN text_tokenized  SET MASKING POLICY UIF_CORE.MASK_EVIDENCE;
+
+-- Reference + dispute marts (mirror sql/duckdb/core.sql) ------------------------
+CREATE TABLE IF NOT EXISTS UIF_CORE.REF_REASON_CODE (
+  network STRING, reason_code STRING, category STRING, description STRING, required_evidence STRING
+);  -- owned by the disputes team; data/reference/reason_codes.csv is an illustrative seed only
+
+CREATE OR REPLACE VIEW UIF_MART.MART_DISPUTE_PACKET AS
+SELECT f.doc_id, l.merchant_id, l.legal_name,
+  MAX(IFF(field_path = 'case_number',    value_norm::STRING, NULL)) AS case_number,
+  MAX(IFF(field_path = 'card_network',   value_norm::STRING, NULL)) AS card_network,
+  MAX(IFF(field_path = 'reason_code',    value_norm::STRING, NULL)) AS reason_code,
+  MAX(IFF(field_path = 'dispute_amount', TRY_TO_DOUBLE(value_norm::STRING), NULL)) AS dispute_amount,
+  MAX(IFF(field_path = 'rebuttal_basis', value_norm::STRING, NULL)) AS rebuttal_basis,
+  PARSE_JSON(MAX(IFF(field_path = 'evidence_types', TO_JSON(value_norm), NULL)))::ARRAY AS evidence_types,
+  BOOLOR_AGG(review_status = 'needs_review') AS has_open_review
+FROM UIF_CORE.EXTRACTED_FACT f LEFT JOIN UIF_CORE.ENTITY_LINK l USING (doc_id)
+WHERE f.schema_name = 'dispute_rebuttal'
+GROUP BY ALL;
+
+-- <DISPUTES_DB>.<SCHEMA>.DISPUTE_CASE is the dispute system's case table (outcome per case).
+CREATE OR REPLACE VIEW UIF_MART.MART_DISPUTE_EVIDENCE AS
+WITH j AS (
+  SELECT p.*, r.category, r.description AS reason_description,
+    SPLIT(r.required_evidence, ';') AS required_evidence,
+    ARRAY_EXCEPT(SPLIT(r.required_evidence, ';'), COALESCE(p.evidence_types, ARRAY_CONSTRUCT())) AS missing_evidence,
+    c.outcome
+  FROM UIF_MART.MART_DISPUTE_PACKET p
+  LEFT JOIN UIF_CORE.REF_REASON_CODE r ON r.reason_code = p.reason_code AND r.network = p.card_network
+  LEFT JOIN <DISPUTES_DB>.<SCHEMA>.DISPUTE_CASE c ON c.case_number = p.case_number
+)
+SELECT *, ROUND(1 - ARRAY_SIZE(missing_evidence) / NULLIF(ARRAY_SIZE(required_evidence), 0), 2) AS evidence_completeness
+FROM j;
+
+CREATE OR REPLACE VIEW UIF_MART.MART_DISPUTE_WIN_RATE AS
+SELECT category, ARRAY_SIZE(missing_evidence) = 0 AS evidence_complete,
+  COUNT(*) AS cases,
+  COUNT_IF(outcome = 'won') AS won,
+  COUNT_IF(outcome IN ('won', 'lost')) AS decided,
+  ROUND(COUNT_IF(outcome = 'won') / NULLIF(COUNT_IF(outcome IN ('won', 'lost')), 0), 2) AS win_rate,
+  ROUND(SUM(dispute_amount), 2) AS amount_at_stake
+FROM UIF_MART.MART_DISPUTE_EVIDENCE
+WHERE category IS NOT NULL
+GROUP BY ALL;
+
+CREATE OR REPLACE VIEW UIF_MART.MART_EVIDENCE_GAPS AS
+SELECT e.category, g.value::STRING AS missing_evidence, COUNT(*) AS packets, ROUND(SUM(e.dispute_amount), 2) AS amount_at_stake
+FROM UIF_MART.MART_DISPUTE_EVIDENCE e, LATERAL FLATTEN(input => e.missing_evidence) g
+GROUP BY ALL;

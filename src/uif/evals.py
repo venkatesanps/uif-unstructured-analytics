@@ -78,8 +78,8 @@ def evaluate(ctx: Context, path: str | Path, run_pipeline: bool = True) -> dict[
     path = Path(path)
     labels = [json.loads(p.read_text()) for p in sorted((path / "labels").glob("*.json"))]
     if run_pipeline:
-        for group in sorted({l["source_group"] for l in labels}):
-            process_path(ctx, path / group, group, "golden", force=True)
+        for folder, group in sorted({(str(Path(l["file"]).parent), l["source_group"]) for l in labels}):
+            process_path(ctx, path / folder, group, "golden", force=True)
 
     cls_ok = 0
     ent_ok = 0
@@ -126,7 +126,7 @@ def evaluate(ctx: Context, path: str | Path, run_pipeline: bool = True) -> dict[
             facts_total += 1
             grounded += "not_grounded" not in f.review_reasons
             reviewed += f.review_status == "needs_review"
-        if "adversarial" in lab.get("flags", []):
+        if {"adversarial", "injection"} & set(lab.get("flags", [])):
             adversarial.append(not wrong)
         per_doc.append({"file": lab["file"], "doc_type": cls.doc_type, "wrong": wrong,
                         "review_tasks": [t.reason for t in val.review_tasks]})

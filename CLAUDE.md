@@ -26,6 +26,8 @@ facts → Snowflake analytics. Design doc: "Merchant Services Unstructured-Data 
   Keep step order identical (a contract test enforces it).
 - `sql/duckdb/core.sql` and `sql/snowflake/core.sql` — same tables and columns. Change both.
 - `synth.py` — labeled synthetic documents; `evals.py` — metrics + gates.
+- `data/reference/*.csv` — lookups for schema rules and marts (loaded into DuckDB `ref_*` tables;
+  `REF_*` in Snowflake). `reason_codes.csv` evidence requirements are illustrative, not network rules.
 
 ## Commands
 ```

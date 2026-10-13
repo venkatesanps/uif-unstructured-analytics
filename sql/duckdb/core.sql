@@ -33,6 +33,13 @@ CREATE TABLE IF NOT EXISTS review_task (
   decision VARCHAR, corrected_value JSON
 );
 
+-- REFERENCE (loaded from data/reference/*.csv on connect) ---------------------
+CREATE TABLE IF NOT EXISTS ref_reason_code (
+  network VARCHAR, reason_code VARCHAR, category VARCHAR, description VARCHAR, required_evidence VARCHAR
+);
+-- Stand-in for the dispute system's case outcomes (a join to the real table in Snowflake).
+CREATE TABLE IF NOT EXISTS dispute_outcome (case_number VARCHAR, outcome VARCHAR);
+
 -- MARTS ---------------------------------------------------------------------
 
 -- One row per processor statement, typed columns, with the merchant it belongs to.
@@ -80,3 +87,53 @@ SELECT t.task_id, t.doc_id, e.file_name, c.doc_type, t.reason, t.created_ts
 FROM review_task t JOIN doc_envelope e USING (doc_id) LEFT JOIN doc_classification c USING (doc_id)
 WHERE t.decision IS NULL
 ORDER BY t.created_ts;
+
+-- Dispute rebuttals -----------------------------------------------------------
+
+-- One row per rebuttal packet.
+CREATE OR REPLACE VIEW mart_dispute_packet AS
+SELECT f.doc_id, l.merchant_id, l.legal_name,
+  any_value(value_norm ->> '$')                      FILTER (WHERE field_path = 'case_number')    AS case_number,
+  any_value(value_norm ->> '$')                      FILTER (WHERE field_path = 'card_network')   AS card_network,
+  any_value(value_norm ->> '$')                      FILTER (WHERE field_path = 'reason_code')    AS reason_code,
+  any_value(TRY_CAST(value_norm AS DOUBLE))          FILTER (WHERE field_path = 'dispute_amount') AS dispute_amount,
+  any_value(value_norm ->> '$')                      FILTER (WHERE field_path = 'rebuttal_basis') AS rebuttal_basis,
+  any_value(TRY_CAST(value_norm AS VARCHAR[]))       FILTER (WHERE field_path = 'evidence_types') AS evidence_types,
+  bool_or(review_status = 'needs_review')                                                         AS has_open_review
+FROM extracted_fact f LEFT JOIN entity_link l USING (doc_id)
+WHERE f.schema_name = 'dispute_rebuttal'
+GROUP BY ALL;
+
+-- Evidence present vs required for the reason code, plus the case outcome.
+CREATE OR REPLACE VIEW mart_dispute_evidence AS
+WITH j AS (
+  SELECT p.*, r.category, r.description AS reason_description,
+    string_split(r.required_evidence, ';') AS required_evidence,
+    list_filter(string_split(r.required_evidence, ';'),
+                x -> NOT list_contains(coalesce(p.evidence_types, []::VARCHAR[]), x)) AS missing_evidence,
+    o.outcome
+  FROM mart_dispute_packet p
+  LEFT JOIN ref_reason_code r ON r.reason_code = p.reason_code AND r.network = p.card_network
+  LEFT JOIN dispute_outcome o USING (case_number)
+)
+SELECT *, round(1 - len(missing_evidence) / nullif(len(required_evidence), 0), 2) AS evidence_completeness
+FROM j;
+
+-- Do complete packets win more often? By reason-code category.
+CREATE OR REPLACE VIEW mart_dispute_win_rate AS
+SELECT category, len(missing_evidence) = 0 AS evidence_complete,
+  count(*) AS cases,
+  count(*) FILTER (WHERE outcome = 'won') AS won,
+  count(*) FILTER (WHERE outcome IN ('won', 'lost')) AS decided,
+  round(count(*) FILTER (WHERE outcome = 'won') / nullif(count(*) FILTER (WHERE outcome IN ('won', 'lost')), 0), 2) AS win_rate,
+  round(sum(dispute_amount), 2) AS amount_at_stake
+FROM mart_dispute_evidence
+WHERE category IS NOT NULL
+GROUP BY ALL;
+
+-- Which evidence merchants most often fail to send: the list to coach them on.
+CREATE OR REPLACE VIEW mart_evidence_gaps AS
+SELECT category, gap.unnest AS missing_evidence, count(*) AS packets, round(sum(dispute_amount), 2) AS amount_at_stake
+FROM mart_dispute_evidence, UNNEST(missing_evidence) AS gap
+GROUP BY ALL
+ORDER BY packets DESC, amount_at_stake DESC;

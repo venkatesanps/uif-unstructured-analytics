@@ -1,0 +1,28 @@
+{
+  "file": "dispute/rebuttal_00.eml",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "merchant_id": "M0002",
+  "fields": {
+    "case_number": "CB-2026-343224",
+    "merchant_legal_name": "Ridgeline Outdoor Supply Inc",
+    "mid": "800023456789",
+    "card_network": "visa",
+    "reason_code": "13.1",
+    "dispute_amount": 66.17,
+    "transaction_date": "2026-08-08",
+    "order_number": "ORD-96313",
+    "evidence_types": [
+      "invoice/receipt",
+      "proof of delivery",
+      "signature"
+    ],
+    "rebuttal_basis": "delivered"
+  },
+  "flags": [
+    "email_attachments",
+    "image_page"
+  ],
+  "missing_required_evidence": [],
+  "raw_identifiers": []
+}

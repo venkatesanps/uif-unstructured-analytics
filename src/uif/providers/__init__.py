@@ -67,7 +67,7 @@ def build_providers(cfg: dict[str, Any]) -> Providers:
 
     w = cfg["warehouse"]
     if w["kind"] == "duckdb":
-        warehouse = local.DuckDBWarehouse(w["path"])
+        warehouse = local.DuckDBWarehouse(w["path"], (cfg.get("reference") or {}).get("path"))
     elif w["kind"] == "stage":
         from uif.providers.aws import StageWarehouse
 

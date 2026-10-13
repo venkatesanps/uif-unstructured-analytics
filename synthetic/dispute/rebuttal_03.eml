@@ -1,0 +1,67 @@
+From: billing@lone-example.com
+To: disputes@bank-example.com
+Subject: Dispute response CB-2026-206393
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============5330061996484795553=="
+
+--===============5330061996484795553==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Chargeback dispute response submitted via merchant portal.
+Network reason code and amount are listed below.
+Case Number: CB-2026-206393
+Merchant Name: Lone Star Auto Detailing LLC
+Merchant ID: 800056789012
+Network: Mastercard
+Reason: 4855 - Goods or Services Not Provided
+Amount in Dispute: $89.75
+Original Sale Date: 08/20/2026
+Order #: ORD-57659
+Rebuttal: Our position: the order was delivered to the cardholder's address b=
+efore the dispute was filed.
+
+Attachments:
+- Copy of the invoice for the order
+
+Billing contact: 469-555-0110
+
+--===============5330061996484795553==
+Content-Type: application/pdf
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invoice.pdf"
+MIME-Version: 1.0
+
+JVBERi0xLjMKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3Vy
+Y2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAov
+QmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEg
+L1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9u
+dCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9T
+dWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMg
+OCAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDcgMCBSIC9SZXNvdXJjZXMg
+PDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1h
+Z2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2Jq
+CjUgMCBvYmoKPDwKL1BhZ2VNb2RlIC9Vc2VOb25lIC9QYWdlcyA3IDAgUiAvVHlwZSAvQ2F0YWxv
+Zwo+PgplbmRvYmoKNiAwIG9iago8PAovQXV0aG9yIChhbm9ueW1vdXMpIC9DcmVhdGlvbkRhdGUg
+KEQ6MjAyNjEwMTMxODQ1MTMtMDUnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMg
+KCkgL01vZERhdGUgKEQ6MjAyNjEwMTMxODQ1MTMtMDUnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExh
+YiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAodW5zcGVjaWZpZWQp
+IC9UaXRsZSAodW50aXRsZWQpIC9UcmFwcGVkIC9GYWxzZQo+PgplbmRvYmoKNyAwIG9iago8PAov
+Q291bnQgMSAvS2lkcyBbIDQgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iago4IDAgb2JqCjw8
+Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDMzOQo+Pgpz
+dHJlYW0KR2F0Vlg6SlxrTiheQkwsNS9oVTRUT3BQVjkpbV0lU0IyRSJOJEg9bVh1TDROMSs+Kk5n
+UF1tcSpCX2w9bi9lMF8rLCN1M0w7ZFdaMXIqKUxpZUUjKFcjJS1SIk9vJGNDKHRfMVAqZW4qclQ8
+SDM4O15BQ1chOS9YcDs5b01LPm1EJFAjSUw+QjJFTUNrPERrU0pXXzleU0IvR3NjRC5kZlYvXVcy
+YypNQm48WSpmRyxhQ3FiNyYyI2FDTCVtRGc3Ji5Gcj4ob2BfcmJ1aS1vMmFbQmlXZFMyTCNBMl5A
+U2NmRD9xVnJyPCRFLT8vdWohXEM0SDlbMytHQ2V1YVhQKT9NOkFcVGxSO1IhMVcpXSQ9ZE5XcVE9
+Mm5hOFdaNihESUc4V3Q9c2phTDdRSDxoP2VFN2ZWKzFbUmcsU0xGcGxUb1BRSUZUYzRIImFBW3Ay
+I34+ZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAw
+NjEgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA5IDAwMDAwIG4gCjAwMDAw
+MDAzMjEgMDAwMDAgbiAKMDAwMDAwMDUxNCAwMDAwMCBuIAowMDAwMDAwNTgyIDAwMDAwIG4gCjAw
+MDAwMDA4NDMgMDAwMDAgbiAKMDAwMDAwMDkwMiAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzxh
+Nzc2MmRiYzQ2YWQ5ZGE1ZmViYTNlNjU0YTc5YmIzZj48YTc3NjJkYmM0NmFkOWRhNWZlYmEzZTY1
+NGE3OWJiM2Y+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAo
+b3BlbnNvdXJjZSkKCi9JbmZvIDYgMCBSCi9Sb290IDUgMCBSCi9TaXplIDkKPj4Kc3RhcnR4cmVm
+CjEzMzEKJSVFT0YK
+
+--===============5330061996484795553==--

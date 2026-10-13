@@ -1,0 +1,26 @@
+{
+  "file": "dispute/rebuttal_04.pdf",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "merchant_id": "M0006",
+  "fields": {
+    "case_number": "CB-2026-765226",
+    "merchant_legal_name": "Copperleaf Travel Partners Inc",
+    "mid": "800067890123",
+    "card_network": "visa",
+    "reason_code": "10.4",
+    "dispute_amount": 1102.0,
+    "transaction_date": "2026-08-12",
+    "order_number": "ORD-43063",
+    "evidence_types": [
+      "3ds authentication",
+      "avs/cvv match",
+      "ip/device match",
+      "prior undisputed purchases"
+    ],
+    "rebuttal_basis": "authorized"
+  },
+  "flags": [],
+  "missing_required_evidence": [],
+  "raw_identifiers": []
+}

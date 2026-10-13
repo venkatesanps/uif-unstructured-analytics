@@ -1,0 +1,29 @@
+{
+  "file": "dispute/rebuttal_02.pdf",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "merchant_id": "M0004",
+  "fields": {
+    "case_number": "CB-2026-165271",
+    "merchant_legal_name": "Sunset Vitamin Co",
+    "mid": "800045678901",
+    "card_network": "visa",
+    "reason_code": "13.3",
+    "dispute_amount": 1773.09,
+    "transaction_date": "2026-08-03",
+    "order_number": "ORD-34983",
+    "evidence_types": [
+      "customer communication",
+      "invoice/receipt",
+      "proof of delivery",
+      "refund policy"
+    ],
+    "rebuttal_basis": "as_described"
+  },
+  "flags": [
+    "injection",
+    "image_page"
+  ],
+  "missing_required_evidence": [],
+  "raw_identifiers": []
+}

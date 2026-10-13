@@ -1,0 +1,90 @@
+{
+  "doc_type": "dispute_rebuttal",
+  "version": "1.0.0",
+  "prompt_version": "1.0.0",
+  "description": "Merchant's response to a chargeback: rebuttal letter or portal form plus compelling evidence (invoice, proof of delivery, AVS/CVV, customer communication), as one PDF or an email with attachments.",
+  "classify": {
+    "keywords": ["chargeback", "dispute", "reason code", "rebuttal", "proof of delivery", "invoice", "cardholder", "case number"]
+  },
+  "fields": {
+    "case_number": {
+      "type": "string",
+      "description": "Chargeback/dispute case identifier, e.g. CB-2026-004512.",
+      "hints": ["\\b(CB-\\d{4}-\\d{6})\\b"]
+    },
+    "merchant_legal_name": {
+      "type": "string",
+      "description": "Merchant submitting the rebuttal.",
+      "hints": ["^(?:Merchant|Merchant Name):\\s*(.+)$"]
+    },
+    "mid": {
+      "type": "string",
+      "description": "Merchant identifier (MID), if printed.",
+      "hints": ["(?:MID|Merchant ID):\\s*(\\d{8,16})"]
+    },
+    "card_network": {
+      "type": "enum",
+      "values": ["visa", "mastercard", "discover", "amex"],
+      "description": "Card network of the disputed transaction.",
+      "hints": ["(?:Card Network|Network):\\s*(Visa|Mastercard|Discover|Amex)"]
+    },
+    "reason_code": {
+      "type": "string",
+      "description": "Network reason code as printed, e.g. 13.1 (Visa) or 4855 (Mastercard).",
+      "review_below": 0.85,
+      "hints": ["(?:Reason Code|Reason):\\s*(\\d{2}\\.\\d|\\d{4})\\b"]
+    },
+    "dispute_amount": {
+      "type": "money",
+      "description": "Amount in dispute, USD.",
+      "review_below": 0.85,
+      "hints": ["(?:Disputed Amount|Amount in Dispute|Chargeback Amount):\\s*(\\$?[\\d,]+\\.\\d{2})"]
+    },
+    "transaction_date": {
+      "type": "date",
+      "description": "Date of the original sale (ISO).",
+      "hints": ["(?:Transaction Date|Original Sale Date):\\s*([\\d/-]{8,10})"]
+    },
+    "order_number": {
+      "type": "string",
+      "description": "Merchant's order or invoice number for the disputed sale.",
+      "hints": ["(?:Order Number|Order #):\\s*([A-Z0-9-]{5,})"]
+    },
+    "evidence_types": {
+      "type": "string_list",
+      "description": "Kinds of compelling evidence actually included in the packet (not merely mentioned as missing).",
+      "hint_confidence": 0.8,
+      "vocabulary": {
+        "invoice/receipt": ["invoice", "receipt"],
+        "proof of delivery": ["proof of delivery", "delivered on", "tracking number"],
+        "signature": ["signed by"],
+        "avs/cvv match": ["avs match", "cvv match", "avs result"],
+        "3ds authentication": ["3-d secure", "3ds"],
+        "ip/device match": ["ip address", "device id"],
+        "customer communication": ["chat transcript", "email from the cardholder", "cardholder wrote"],
+        "refund policy": ["refund policy", "return policy"],
+        "prior undisputed purchases": ["prior purchases", "previous orders"]
+      }
+    },
+    "rebuttal_basis": {
+      "type": "enum",
+      "values": ["delivered", "authorized", "refund_issued", "as_described", "cancellation_not_received"],
+      "description": "The merchant's main argument.",
+      "hint_confidence": 0.8,
+      "vocabulary": {
+        "delivered": ["delivered to the cardholder"],
+        "authorized": ["cardholder authorized", "was authorized by the cardholder"],
+        "refund_issued": ["refund was issued", "credit was processed"],
+        "as_described": ["matched the description", "as described on our website"],
+        "cancellation_not_received": ["no cancellation request", "never requested cancellation"]
+      }
+    }
+  },
+  "required": ["case_number", "reason_code", "dispute_amount"],
+  "rules": [
+    {"id": "amount_positive", "check": "gte", "left": "dispute_amount", "value": 0.01},
+    {"id": "reason_code_known", "check": "in_ref", "left": "reason_code", "ref": "reason_codes", "ref_column": "reason_code"},
+    {"id": "network_matches_code", "check": "ref_pair", "left": "reason_code", "right": "card_network",
+     "ref": "reason_codes", "ref_columns": ["reason_code", "network"]}
+  ]
+}
