@@ -1,0 +1,27 @@
+{
+  "file": "merchant/rebuttal_upload.zip",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "fields": {
+    "case_number": "CB-2026-818461",
+    "merchant_legal_name": "Lone Star Auto Detailing LLC",
+    "mid": "800056789012",
+    "card_network": "visa",
+    "reason_code": "13.1",
+    "dispute_amount": 238.4,
+    "transaction_date": "2026-08-06",
+    "order_number": "ORD-74262",
+    "evidence_types": [
+      "invoice/receipt",
+      "proof of delivery",
+      "signature"
+    ],
+    "rebuttal_basis": "delivered"
+  },
+  "merchant_id": "M0005",
+  "format": "zip (docx + pdf + jpeg)",
+  "flags": [
+    "archive"
+  ],
+  "raw_identifiers": []
+}

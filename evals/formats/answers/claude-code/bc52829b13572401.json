@@ -1,0 +1,69 @@
+{
+ "request_id": "bc52829b13572401",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-882206",
+   "page": 2,
+   "quote": "Case Number: CB-2026-882206",
+   "confidence": 0.97
+  },
+  "merchant_legal_name": {
+   "value": "Copperleaf Travel Partners Inc",
+   "page": 2,
+   "quote": "Merchant Name: Copperleaf Travel Partners Inc",
+   "confidence": 0.96
+  },
+  "mid": {
+   "value": "800067890123",
+   "page": 2,
+   "quote": "Merchant ID: 800067890123",
+   "confidence": 0.96
+  },
+  "card_network": {
+   "value": "mastercard",
+   "page": 2,
+   "quote": "Network: Mastercard",
+   "confidence": 0.96
+  },
+  "reason_code": {
+   "value": "4855",
+   "page": 2,
+   "quote": "Reason: 4855 - Goods or Services Not Provided",
+   "confidence": 0.96
+  },
+  "dispute_amount": {
+   "value": 412.15,
+   "page": 2,
+   "quote": "Amount in Dispute: $412.15",
+   "confidence": 0.96
+  },
+  "transaction_date": {
+   "value": "2026-08-21",
+   "page": 2,
+   "quote": "Original Sale Date: 08/21/2026",
+   "confidence": 0.95
+  },
+  "order_number": {
+   "value": "ORD-77316",
+   "page": 2,
+   "quote": "Order #: ORD-77316",
+   "confidence": 0.95
+  },
+  "evidence_types": {
+   "value": [
+    "invoice/receipt",
+    "proof of delivery"
+   ],
+   "page": 2,
+   "quote": "Copy of the invoice for the order",
+   "confidence": 0.9
+  },
+  "rebuttal_basis": {
+   "value": "delivered",
+   "page": 2,
+   "quote": "Rebuttal: Our position: the order was delivered to the cardholder's address before the dispute was filed.",
+   "confidence": 0.92
+  }
+ }
+}

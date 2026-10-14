@@ -5,7 +5,7 @@ LLM     ?= rules
 export UIF_HOME := $(CURDIR)
 export PYTHONPATH := $(CURDIR)/src
 
-.PHONY: setup synth run eval eval-replay parity test ci review clean up down
+.PHONY: setup synth samples run eval eval-replay eval-samples parity test ci review clean up down
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -14,6 +14,10 @@ setup:
 
 synth:
 	$(BIN)/uif synth --out synthetic --n 12
+
+# one labeled sample per file format (photo, fax TIFF, XLSX, CSV, ZIP, forwarded EML, JSON, DOCX, HTML, chat, Markdown)
+samples:
+	$(BIN)/uif synth --formats --out samples/formats
 
 run:
 	$(BIN)/uif run synthetic/merchant --source merchant --system onboarding_portal --llm $(LLM)
@@ -27,7 +31,7 @@ eval:
 test:
 	$(BIN)/pytest -q
 
-ci: test eval eval-replay
+ci: test eval eval-replay eval-samples
 
 review:
 	$(BIN)/pip install -q streamlit && $(BIN)/streamlit run review_ui/app.py
@@ -50,3 +54,11 @@ eval-replay:
 # Agent vs Bedrock on the same golden requests (answers/bedrock comes back from AWS dev; see PARITY.md).
 parity:
 	$(BIN)/uif parity diff --labels synthetic --names claude-code,bedrock --report evals/parity-report.md --json evals/parity-report.json
+
+# Score the format samples: rules baseline, then the saved Claude answers replayed (no agent needed).
+eval-samples:
+	UIF_STORE=.uif/samples/store UIF_DUCKDB=.uif/samples/uif.duckdb $(BIN)/uif eval samples/formats --llm rules > .uif/samples-rules.json
+	rm -rf .uif/samples-replay && mkdir -p .uif/samples-replay/store/handoff/responses
+	cp evals/formats/answers/claude-code/*.json .uif/samples-replay/store/handoff/responses/
+	UIF_STORE=.uif/samples-replay/store UIF_DUCKDB=.uif/samples-replay/uif.duckdb $(BIN)/uif eval samples/formats --llm handoff > .uif/samples-claude.json
+	@echo "sample evals passed gates: .uif/samples-rules.json, .uif/samples-claude.json"

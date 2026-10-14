@@ -133,7 +133,9 @@ def _scan(pdf_bytes: bytes) -> bytes:
     return out.getvalue()
 
 
-def _statement(rng, merchant, layout: str, year: int, month: int, extra_lines: list[str]) -> tuple[bytes, dict]:
+def statement_content(rng, merchant, layout: str, year: int, month: int, extra_lines: list[str]
+                      ) -> tuple[list[str], list[str], dict]:
+    """Statement pages as text lines plus the true field values (reused by other formats)."""
     _, mid, legal, _, _ = merchant
     n = _statement_numbers(rng)
     last = calendar.monthrange(year, month)[1]
@@ -208,6 +210,11 @@ def _statement(rng, merchant, layout: str, year: int, month: int, extra_lines: l
               ""] + extra_lines
     fields = {"processor_name": processor, "merchant_legal_name": legal, "mid": mid,
               "statement_period": {"start": start.isoformat(), "end": end.isoformat()}, **n}
+    return p1, p2, fields
+
+
+def _statement(rng, merchant, layout: str, year: int, month: int, extra_lines: list[str]) -> tuple[bytes, dict]:
+    p1, p2, fields = statement_content(rng, merchant, layout, year, month, extra_lines)
     return _pdf([p1, p2]), fields
 
 

@@ -1,0 +1,24 @@
+{
+  "file": "merchant/statement_photo.png",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Northwind Payments",
+    "merchant_legal_name": "Blue Harbor Coffee LLC",
+    "mid": "800012345678",
+    "statement_period": {
+      "start": "2026-07-01",
+      "end": "2026-07-31"
+    },
+    "gross_volume": 249651.0,
+    "transaction_count": 2793,
+    "refund_volume": 8762.76,
+    "chargeback_count": 22,
+    "chargeback_volume": 1965.86,
+    "total_fees": 6420.64
+  },
+  "merchant_id": "M0001",
+  "format": "image/png (photo)",
+  "flags": [],
+  "raw_identifiers": []
+}

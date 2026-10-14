@@ -1,0 +1,21 @@
+{
+  "file": "internal/note_html_email.eml",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-5237",
+    "merchant_name": "Sunset Vitamin Co",
+    "analyst": "P. Raman",
+    "review_date": "2026-09-13",
+    "risk_themes": [
+      "card testing",
+      "delayed delivery"
+    ],
+    "recommended_action": "reserve",
+    "exposure_estimate": 256500.0
+  },
+  "merchant_id": "M0004",
+  "format": "eml (HTML-only body)",
+  "flags": [],
+  "raw_identifiers": []
+}

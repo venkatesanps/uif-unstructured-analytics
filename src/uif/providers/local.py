@@ -74,10 +74,15 @@ class LocalStore:
 
 
 def _strip_html(text: str) -> str:
-    text = re.sub(r"(?is)<(script|style).*?</\1>", " ", text)
-    text = re.sub(r"(?i)<br\s*/?>|</p>|</div>|</tr>|</h\d>", "\n", text)
-    text = re.sub(r"<[^>]+>", " ", text)
-    return re.sub(r"[ \t]+", " ", html.unescape(text))
+    """Visible text only, one block per line; a table row <th>Label</th><td>Value</td> reads as
+    "Label: value" so labelled fields survive the conversion."""
+    text = re.sub(r"(?is)<(script|style|head|nav)\b.*?</\1>", " ", text)
+    text = re.sub(r"(?i)</th>", ": ", text)
+    text = re.sub(r"(?i)</td>", " | ", text)
+    text = re.sub(r"(?i)<br\s*/?>|</p>|</div>|</tr>|</h\d>|</li>|</header>|</footer>|</aside>|</article>", "\n", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    lines = (re.sub(r"[ \t]+", " ", line).strip().rstrip("|").strip() for line in html.unescape(text).splitlines())
+    return "\n".join(line for line in lines if line)
 
 
 def _split_pages(text: str) -> list[Page]:
@@ -99,12 +104,14 @@ def email_pages(data: bytes, attachment_to_pages) -> tuple[list[Page], str]:
     methods = {"email"}
     for part in msg.iter_attachments():
         ctype = part.get_content_type()
-        name = part.get_filename() or f"attachment-{len(pages)}"
         payload = part.get_content()
+        name = part.get_filename()
         if isinstance(payload, str):
             payload = payload.encode()
-        elif not isinstance(payload, (bytes, bytearray)):  # nested message/rfc822
+        elif not isinstance(payload, (bytes, bytearray)):  # nested message/rfc822 (forwarded email)
+            name = name or f"forwarded email: {payload['Subject'] or 'no subject'}"
             payload, ctype = bytes(payload), "message/rfc822"
+        name = name or f"attachment-{len(pages)}"
         try:
             sub, method = attachment_to_pages(bytes(payload), ctype, name)
         except NotImplementedError:
@@ -119,8 +126,11 @@ def email_pages(data: bytes, attachment_to_pages) -> tuple[list[Page], str]:
 class LocalOCR:
     """Native PDFs via pdfplumber; scans and images via the tesseract CLI if installed."""
 
-    def __init__(self, tesseract_cmd: str | None = None):
+    def __init__(self, tesseract_cmd: str | None = None, transcriber=None):
+        from uif.providers.formats import WhisperCppTranscriber
+
         self.tesseract = tesseract_cmd or shutil.which("tesseract")
+        self.transcriber = transcriber or WhisperCppTranscriber()
 
     def _tesseract_image(self, image_path: str) -> str:
         if not self.tesseract:
@@ -151,15 +161,28 @@ class LocalOCR:
             with tempfile.NamedTemporaryFile(suffix=suffix) as tmp:
                 tmp.write(data)
                 tmp.flush()
-                return [Page(page=1, text=self._tesseract_image(tmp.name))], "tesseract"
+                # multi-page TIFF (fax): tesseract separates pages with form feeds
+                return _split_pages(self._tesseract_image(tmp.name)), "tesseract"
         if mime_type == "message/rfc822":
             return email_pages(data, self.to_pages)
+        from uif.providers import formats as fmt
+
+        if mime_type == fmt.DOCX:
+            return fmt.docx_pages(data), "docx"
+        if mime_type == fmt.XLSX:
+            return fmt.xlsx_pages(data), "xlsx"
+        if mime_type == "text/csv":
+            return fmt.csv_pages(data), "csv"
+        if mime_type == "application/json":
+            return fmt.json_pages(data), "json"
+        if mime_type in fmt.ZIP_TYPES:
+            return fmt.zip_pages(data, self.to_pages, fmt.guess_mime)
+        if mime_type.startswith("audio/"):
+            return fmt.audio_pages(data, file_name, self.transcriber), "transcript"
         if mime_type == "text/html":
             return _split_pages(_strip_html(data.decode("utf-8", "replace"))), "html"
-        if mime_type.startswith("text/") or mime_type in ("application/json",):
+        if mime_type.startswith("text/"):
             return _split_pages(data.decode("utf-8", "replace")), "text"
-        if mime_type.startswith("audio/"):
-            raise NotImplementedError("audio: wire whisper.cpp here (local) or Transcribe (aws)")
         raise NotImplementedError(f"no local normalizer for {mime_type}")
 
 

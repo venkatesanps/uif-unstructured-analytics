@@ -3,19 +3,11 @@
 from __future__ import annotations
 
 import hashlib
-import mimetypes
 from pathlib import Path
 
 from uif.context import Context
 from uif.contracts import DocEnvelope, SourceGroup, StepResult
-
-_EXTRA_MIME = {".eml": "message/rfc822", ".msg": "application/vnd.ms-outlook", ".md": "text/markdown",
-               ".csv": "text/csv", ".txt": "text/plain"}
-
-
-def guess_mime(file_name: str) -> str:
-    ext = Path(file_name).suffix.lower()
-    return _EXTRA_MIME.get(ext) or mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+from uif.providers.formats import guess_mime  # noqa: F401  (re-exported)
 
 
 def run(ctx: Context, data: bytes, file_name: str, source_group: str, source_system: str,

@@ -1,0 +1,51 @@
+{
+ "request_id": "098d34de2344b3ec",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-5237",
+   "page": 1,
+   "quote": "Case: RC-2026-5237",
+   "confidence": 0.98
+  },
+  "merchant_name": {
+   "value": "Sunset Vitamin Co",
+   "page": 1,
+   "quote": "Merchant: Sunset Vitamin Co",
+   "confidence": 0.97
+  },
+  "analyst": {
+   "value": "P. Raman",
+   "page": 1,
+   "quote": "Analyst: P. Raman",
+   "confidence": 0.96
+  },
+  "review_date": {
+   "value": "2026-09-13",
+   "page": 1,
+   "quote": "Review date: 2026-09-13",
+   "confidence": 0.97
+  },
+  "risk_themes": {
+   "value": [
+    "card testing",
+    "delayed delivery"
+   ],
+   "page": 1,
+   "quote": "We saw bursts of small-dollar authorizations from a handful of IP ranges.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "reserve",
+   "page": 1,
+   "quote": "Recommendation: reserve",
+   "confidence": 0.97
+  },
+  "exposure_estimate": {
+   "value": 256500.0,
+   "page": 1,
+   "quote": "Exposure estimate: $256,500.00",
+   "confidence": 0.96
+  }
+ }
+}

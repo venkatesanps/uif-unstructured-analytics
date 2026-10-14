@@ -1,0 +1,28 @@
+{
+  "file": "merchant/statement_fax.tif",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Lakeside Merchant Services",
+    "merchant_legal_name": "Ridgeline Outdoor Supply Inc",
+    "mid": "800023456789",
+    "statement_period": {
+      "start": "2026-08-01",
+      "end": "2026-08-31"
+    },
+    "gross_volume": 432980.82,
+    "transaction_count": 4189,
+    "refund_volume": 14036.4,
+    "chargeback_count": 36,
+    "chargeback_volume": 3720.47,
+    "total_fees": 12484.86
+  },
+  "merchant_id": "M0002",
+  "format": "image/tiff (multi-page fax)",
+  "flags": [
+    "multi_page_image"
+  ],
+  "raw_identifiers": [
+    "disputes@lakeside-example.com"
+  ]
+}

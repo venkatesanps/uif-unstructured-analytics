@@ -1,0 +1,31 @@
+{
+  "channel": "merchant-risk-reviews",
+  "exported": "2026-09-19T17:00:00Z",
+  "messages": [
+    {
+      "ts": "2026-09-19T09:05:00",
+      "user": "R. Patel",
+      "text": "Opening case RC-2026-2999 on Copperleaf Travel Partners Inc, MID 800067890123. Can someone take the risk review?"
+    },
+    {
+      "ts": "2026-09-19T09:17:00",
+      "user": "S. Whitfield",
+      "text": "Taking it. A growing share of sales is nutraceutical products."
+    },
+    {
+      "ts": "2026-09-19T09:45:00",
+      "user": "S. Whitfield",
+      "text": "The refund rate has climbed for three straight months."
+    },
+    {
+      "ts": "2026-09-19T10:00:00",
+      "user": "R. Patel",
+      "text": "What's the analyst recommendation and exposure?"
+    },
+    {
+      "ts": "2026-09-19T10:03:00",
+      "user": "S. Whitfield",
+      "text": "Recommendation: reduce_limit. Exposure estimate: $195,500.00. Review date 2026-09-19."
+    }
+  ]
+}

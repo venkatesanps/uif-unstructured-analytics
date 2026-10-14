@@ -1,0 +1,25 @@
+{
+  "file": "merchant/rebuttal_portal.json",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "fields": {
+    "case_number": "CB-2026-247732",
+    "merchant_legal_name": "Maple & Main Bakery LLC",
+    "mid": "800078901234",
+    "card_network": "mastercard",
+    "reason_code": "4837",
+    "dispute_amount": 1310.0,
+    "transaction_date": "2026-08-17",
+    "order_number": "ORD-94514",
+    "evidence_types": [
+      "avs/cvv match",
+      "3ds authentication",
+      "ip/device match"
+    ],
+    "rebuttal_basis": "authorized"
+  },
+  "merchant_id": "M0007",
+  "format": "json (API payload)",
+  "flags": [],
+  "raw_identifiers": []
+}

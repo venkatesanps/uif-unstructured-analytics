@@ -173,6 +173,11 @@ def cmd_step(args) -> int:
 
 
 def cmd_synth(args) -> int:
+    if args.formats:
+        from uif.synth_formats import generate_formats
+
+        print(json.dumps(generate_formats(args.out), indent=2))
+        return 0
     from uif.synth import generate
 
     summary = generate(args.out, n=args.n, seed=args.seed)
@@ -261,6 +266,7 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--out", default="synthetic")
     g.add_argument("--n", type=int, default=12)
     g.add_argument("--seed", type=int, default=7)
+    g.add_argument("--formats", action="store_true", help="one labeled sample per file format (samples/formats)")
     g.set_defaults(fn=cmd_synth)
 
     e = sub.add_parser("eval", help="score against golden labels")

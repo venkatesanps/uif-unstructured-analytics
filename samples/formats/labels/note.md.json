@@ -1,0 +1,21 @@
+{
+  "file": "internal/note.md",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-8690",
+    "merchant_name": "Maple & Main Bakery LLC",
+    "analyst": "J. Ortiz",
+    "review_date": "2026-09-22",
+    "risk_themes": [
+      "high-risk mcc",
+      "volume spike"
+    ],
+    "recommended_action": "terminate",
+    "exposure_estimate": 220100.0
+  },
+  "merchant_id": "M0007",
+  "format": "markdown",
+  "flags": [],
+  "raw_identifiers": []
+}

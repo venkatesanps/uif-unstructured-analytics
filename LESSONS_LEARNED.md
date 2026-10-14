@@ -2,6 +2,9 @@
 
 One line per lesson, newest first: date — what happened — what we changed.
 
+- 2026-10-13 — Tesseract ends its output with a form feed; splitting multi-page TIFFs on it also trimmed single images, which changed a golden request ID — the drift test caught it; regenerate and re-answer instead of hand-editing.
+- 2026-10-13 — An attached email has no filename, so forwarded messages showed up as `attachment-1` — they're now labelled `forwarded email: <subject>`.
+- 2026-10-13 — HTML tables flattened into run-on text and lost their labels — `<th>Label</th><td>Value</td>` now reads as `Label: Value`, and lines are trimmed.
 - 2026-10-13 — Parity needs both extractors on byte-identical input, or disagreements mix model differences with prompt differences — Bedrock answers the handoff request's own system/user prompt and schema; saved answers are pinned to request IDs and a test fails on drift.
 - 2026-10-13 — Fixing a guard pattern doesn't clean what is already stored: old guarded/ files and handoff requests still held the identifier — added `uif reguard` (re-guards every stored doc, purges handoff requests the new guard would change). Run it after every guard change.
 - 2026-10-13 — OCR split an email into "disputes @ lakeside-example.com" and the guard missed it; the leak check also missed it because only planted IDs were scanned — email pattern tolerates single spaces around @ and dots (alphabetic TLD required); planted contact emails added to labels.

@@ -19,7 +19,7 @@ make setup             # venv + deps   (optional: brew install tesseract  -> sca
 make synth             # 19 labeled synthetic docs + data/merchant_master.csv + outcomes
 make run               # process them with the offline rules baseline
 make -s eval           # golden metrics + gates, JSON to stdout
-make test              # 49 tests: unit, contract, golden, adversarial, integration, aws (moto)
+make test              # 72 tests: unit, contract, golden, adversarial, integration, aws (moto)
 .venv/bin/uif sql "select * from mart_underwriting_variance"
 .venv/bin/uif sql "select * from mart_evidence_gaps"
 .venv/bin/uif review   # open review queue      (make review -> Streamlit reviewer UI)
@@ -92,6 +92,45 @@ layout and the freeform rebuttal email extract nothing usable and lands in revie
 as `unknown_doc_type`; the merchant missing from master data is flagged; planted card numbers and
 SSNs never leave `raw/`/`restricted/`. Real accuracy is measured with `LLM=ollama` locally and
 Bedrock in AWS, against redacted real samples (Phase 1–2).
+
+## Supported formats (with samples)
+
+`samples/formats/` holds one labeled sample per format (`make samples` regenerates it, `make eval-samples`
+scores it). Each reader turns its format into pages of text that keep the document's labels, so the same
+schemas, hints and prompts apply whatever the container.
+
+| Format | Sample | Reader | Notes |
+| --- | --- | --- | --- |
+| PDF, native text | `synthetic/merchant/*.pdf`, `network_bulletin.pdf` | pdfplumber | Textract in AWS |
+| PDF, scanned / mixed | `statement_03_B.pdf`, `rebuttal_02.pdf` | pdfplumber + tesseract per image page | |
+| Photo (PNG/JPEG) | `statement_photo.png`, JPEG inside the ZIP | tesseract | skewed, blurred phone photo |
+| Fax (multi-page TIFF, Group 4) | `statement_fax.tif` | tesseract, page per frame | |
+| Excel (XLSX) | `statement_export.xlsx` | openpyxl; numbers rendered with their cell format | one page per sheet; planted card number tokenized |
+| CSV | `statement_export.csv` | csv (dialect sniffed) | 2-column rows read as `Label: value` |
+| Word (DOCX) | `note_memo.docx`, letter inside the ZIP | XML reader (no Word needed) | paragraphs, tables, page breaks; planted SSN tokenized |
+| Email (EML) | plain, HTML-only, with attachments, forwarded EML inside EML | email parser + recursion | attachments labelled by file or forwarded subject |
+| ZIP upload | `rebuttal_upload.zip` (DOCX + PDF + JPEG) | recursion, depth ≤ 2 | refuses >50 files, >50 MB, or >100× expansion (zip bombs) |
+| HTML | case-system export, news article | tag stripper; `<th>`/`<td>` → `Label: value` | scripts, styles, nav dropped |
+| JSON | portal API payload, team chat export | chat → transcript; other JSON → `Key: value` lines | `caseNumber` → `Case Number` |
+| Markdown / text | `note.md`, `synthetic/internal/*.txt` | text | |
+| Audio (WAV/MP3/M4A) | generated only where a TTS engine exists | whisper.cpp CLI locally, Transcribe in AWS | halts cleanly with a clear message if no transcriber |
+
+Not covered: Outlook `.msg` (needs an extra library) and PowerPoint. Both are easy to add as readers
+when a real source needs them.
+
+Results on the samples (2026-10-13, 14 documents, `evals/formats/`):
+
+| Metric | Rules baseline | Claude via handoff |
+| --- | --- | --- |
+| Classification accuracy | 1.00 | 1.00 |
+| Required-field F1 | 0.92 | 1.00 |
+| Merchant linking | 0.86 | 1.00 |
+| PII/PAN leakage | 0 | 0 |
+
+The rules baseline misses whatever isn't written as `Label: value`: Markdown bold labels, a chat
+transcript, an API payload with an unformatted amount. These go to review rather than being
+guessed. The same caveat as the golden set applies to the Claude column: same-session answers on
+clean synthetic documents.
 
 ## Dispute rebuttal packets
 

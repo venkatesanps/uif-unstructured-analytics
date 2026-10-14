@@ -1,0 +1,25 @@
+{
+  "file": "internal/note_memo.docx",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-7043",
+    "merchant_name": "Pinecrest Dental Group PLLC",
+    "analyst": "J. Ortiz",
+    "review_date": "2026-09-10",
+    "risk_themes": [
+      "card testing",
+      "chargeback spike"
+    ],
+    "recommended_action": "monitor",
+    "exposure_estimate": 121800.0
+  },
+  "merchant_id": "M0003",
+  "format": "docx (paragraphs + table)",
+  "flags": [
+    "planted_ssn"
+  ],
+  "raw_identifiers": [
+    "987-65-4320"
+  ]
+}

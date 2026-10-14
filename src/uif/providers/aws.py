@@ -92,6 +92,10 @@ class TextractOCR:
             from uif.providers.local import email_pages
 
             return email_pages(data, self.to_pages)
+        from uif.providers import formats as fmt
+
+        if mime_type in fmt.ZIP_TYPES:  # archive members: images/PDFs through Textract too
+            return fmt.zip_pages(data, self.to_pages, fmt.guess_mime)
         if not (mime_type == "application/pdf" or mime_type.startswith("image/")):
             from uif.providers.local import LocalOCR  # text, email and html need no OCR
 

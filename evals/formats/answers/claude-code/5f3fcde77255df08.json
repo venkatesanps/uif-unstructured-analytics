@@ -1,0 +1,51 @@
+{
+ "request_id": "5f3fcde77255df08",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-7043",
+   "page": 1,
+   "quote": "Case: RC-2026-7043",
+   "confidence": 0.98
+  },
+  "merchant_name": {
+   "value": "Pinecrest Dental Group PLLC",
+   "page": 1,
+   "quote": "Merchant: Pinecrest Dental Group PLLC",
+   "confidence": 0.97
+  },
+  "analyst": {
+   "value": "J. Ortiz",
+   "page": 1,
+   "quote": "Analyst: J. Ortiz",
+   "confidence": 0.96
+  },
+  "review_date": {
+   "value": "2026-09-10",
+   "page": 1,
+   "quote": "Review date: 2026-09-10",
+   "confidence": 0.97
+  },
+  "risk_themes": {
+   "value": [
+    "card testing",
+    "chargeback spike"
+   ],
+   "page": 1,
+   "quote": "We saw bursts of small-dollar authorizations from a handful of IP ranges.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "monitor",
+   "page": 1,
+   "quote": "Recommendation: monitor",
+   "confidence": 0.97
+  },
+  "exposure_estimate": {
+   "value": 121800.0,
+   "page": 1,
+   "quote": "Exposure estimate: $121,800.00",
+   "confidence": 0.96
+  }
+ }
+}

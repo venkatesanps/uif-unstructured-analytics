@@ -1,0 +1,26 @@
+{
+  "file": "merchant/rebuttal_forwarded.eml",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "fields": {
+    "case_number": "CB-2026-882206",
+    "merchant_legal_name": "Copperleaf Travel Partners Inc",
+    "mid": "800067890123",
+    "card_network": "mastercard",
+    "reason_code": "4855",
+    "dispute_amount": 412.15,
+    "transaction_date": "2026-08-21",
+    "order_number": "ORD-77316",
+    "evidence_types": [
+      "invoice/receipt",
+      "proof of delivery"
+    ],
+    "rebuttal_basis": "delivered"
+  },
+  "merchant_id": "M0006",
+  "format": "eml (forwarded eml with pdf + png)",
+  "flags": [
+    "nested_email"
+  ],
+  "raw_identifiers": []
+}

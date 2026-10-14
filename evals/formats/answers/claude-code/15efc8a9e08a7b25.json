@@ -1,0 +1,51 @@
+{
+ "request_id": "15efc8a9e08a7b25",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-8035",
+   "page": 1,
+   "quote": "Case: RC-2026-8035",
+   "confidence": 0.98
+  },
+  "merchant_name": {
+   "value": "Lone Star Auto Detailing LLC",
+   "page": 1,
+   "quote": "Merchant: Lone Star Auto Detailing LLC",
+   "confidence": 0.97
+  },
+  "analyst": {
+   "value": "K. Nguyen",
+   "page": 1,
+   "quote": "Analyst: K. Nguyen",
+   "confidence": 0.96
+  },
+  "review_date": {
+   "value": "2026-09-16",
+   "page": 1,
+   "quote": "Review date: 2026-09-16",
+   "confidence": 0.97
+  },
+  "risk_themes": {
+   "value": [
+    "refund abuse",
+    "volume spike"
+   ],
+   "page": 1,
+   "quote": "The refund rate has climbed for three straight months.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "escalate",
+   "page": 1,
+   "quote": "Recommendation: escalate",
+   "confidence": 0.97
+  },
+  "exposure_estimate": {
+   "value": 151600.0,
+   "page": 1,
+   "quote": "Exposure estimate: $151,600.00",
+   "confidence": 0.96
+  }
+ }
+}

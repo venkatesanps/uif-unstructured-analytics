@@ -1,0 +1,51 @@
+{
+ "request_id": "2728d78e31e2749a",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-2999",
+   "page": 1,
+   "quote": "Opening case RC-2026-2999 on Copperleaf Travel Partners Inc",
+   "confidence": 0.95
+  },
+  "merchant_name": {
+   "value": "Copperleaf Travel Partners Inc",
+   "page": 1,
+   "quote": "Opening case RC-2026-2999 on Copperleaf Travel Partners Inc",
+   "confidence": 0.93
+  },
+  "analyst": {
+   "value": "S. Whitfield",
+   "page": 1,
+   "quote": "S. Whitfield: Taking it.",
+   "confidence": 0.85
+  },
+  "review_date": {
+   "value": "2026-09-19",
+   "page": 1,
+   "quote": "Review date 2026-09-19.",
+   "confidence": 0.9
+  },
+  "risk_themes": {
+   "value": [
+    "high-risk mcc",
+    "refund abuse"
+   ],
+   "page": 1,
+   "quote": "A growing share of sales is nutraceutical products.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "reduce_limit",
+   "page": 1,
+   "quote": "Recommendation: reduce_limit.",
+   "confidence": 0.95
+  },
+  "exposure_estimate": {
+   "value": 195500.0,
+   "page": 1,
+   "quote": "Exposure estimate: $195,500.00.",
+   "confidence": 0.95
+  }
+ }
+}

@@ -1,0 +1,21 @@
+{
+  "file": "internal/note_chat.json",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-2999",
+    "merchant_name": "Copperleaf Travel Partners Inc",
+    "analyst": "S. Whitfield",
+    "review_date": "2026-09-19",
+    "risk_themes": [
+      "high-risk mcc",
+      "refund abuse"
+    ],
+    "recommended_action": "reduce_limit",
+    "exposure_estimate": 195500.0
+  },
+  "merchant_id": "M0006",
+  "format": "json (team chat export)",
+  "flags": [],
+  "raw_identifiers": []
+}

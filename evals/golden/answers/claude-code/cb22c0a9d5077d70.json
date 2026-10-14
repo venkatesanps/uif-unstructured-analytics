@@ -1,0 +1,70 @@
+{
+ "request_id": "cb22c0a9d5077d70",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-343224",
+   "page": 1,
+   "quote": "Case Number: CB-2026-343224",
+   "confidence": 0.98
+  },
+  "merchant_legal_name": {
+   "value": "Ridgeline Outdoor Supply Inc",
+   "page": 1,
+   "quote": "Merchant Name: Ridgeline Outdoor Supply Inc",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800023456789",
+   "page": 1,
+   "quote": "Merchant ID: 800023456789",
+   "confidence": 0.97
+  },
+  "card_network": {
+   "value": "visa",
+   "page": 1,
+   "quote": "Network: Visa",
+   "confidence": 0.97
+  },
+  "reason_code": {
+   "value": "13.1",
+   "page": 1,
+   "quote": "Reason: 13.1 - Merchandise/Services Not Received",
+   "confidence": 0.97
+  },
+  "dispute_amount": {
+   "value": 66.17,
+   "page": 1,
+   "quote": "Amount in Dispute: $66.17",
+   "confidence": 0.97
+  },
+  "transaction_date": {
+   "value": "2026-08-08",
+   "page": 1,
+   "quote": "Original Sale Date: 08/08/2026",
+   "confidence": 0.96
+  },
+  "order_number": {
+   "value": "ORD-96313",
+   "page": 1,
+   "quote": "Order #: ORD-96313",
+   "confidence": 0.96
+  },
+  "evidence_types": {
+   "value": [
+    "invoice/receipt",
+    "proof of delivery",
+    "signature"
+   ],
+   "page": 1,
+   "quote": "Copy of the invoice for the order",
+   "confidence": 0.9
+  },
+  "rebuttal_basis": {
+   "value": "delivered",
+   "page": 1,
+   "quote": "Rebuttal: Our position: the order was delivered to the cardholder's address before the dispute was filed.",
+   "confidence": 0.93
+  }
+ }
+}

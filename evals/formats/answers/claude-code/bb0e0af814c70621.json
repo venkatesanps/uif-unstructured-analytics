@@ -1,0 +1,51 @@
+{
+ "request_id": "bb0e0af814c70621",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-8690",
+   "page": 1,
+   "quote": "| Case | RC-2026-8690 |",
+   "confidence": 0.95
+  },
+  "merchant_name": {
+   "value": "Maple & Main Bakery LLC",
+   "page": 1,
+   "quote": "# Risk review: Maple & Main Bakery LLC",
+   "confidence": 0.92
+  },
+  "analyst": {
+   "value": "J. Ortiz",
+   "page": 1,
+   "quote": "| Analyst | J. Ortiz |",
+   "confidence": 0.93
+  },
+  "review_date": {
+   "value": "2026-09-22",
+   "page": 1,
+   "quote": "| Review date | 2026-09-22 |",
+   "confidence": 0.93
+  },
+  "risk_themes": {
+   "value": [
+    "high-risk mcc",
+    "volume spike"
+   ],
+   "page": 1,
+   "quote": "A growing share of sales is nutraceutical products.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "terminate",
+   "page": 1,
+   "quote": "- **Recommendation:** terminate",
+   "confidence": 0.95
+  },
+  "exposure_estimate": {
+   "value": 220100.0,
+   "page": 1,
+   "quote": "- **Exposure estimate:** $220,100.00",
+   "confidence": 0.95
+  }
+ }
+}

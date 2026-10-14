@@ -1,0 +1,70 @@
+{
+ "request_id": "d19966734ea1ae21",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-247732",
+   "page": 1,
+   "quote": "Case Number: CB-2026-247732",
+   "confidence": 0.97
+  },
+  "merchant_legal_name": {
+   "value": "Maple & Main Bakery LLC",
+   "page": 1,
+   "quote": "Name: Maple & Main Bakery LLC",
+   "confidence": 0.92
+  },
+  "mid": {
+   "value": "800078901234",
+   "page": 1,
+   "quote": "Merchant Id: 800078901234",
+   "confidence": 0.93
+  },
+  "card_network": {
+   "value": "mastercard",
+   "page": 1,
+   "quote": "Network: Mastercard",
+   "confidence": 0.96
+  },
+  "reason_code": {
+   "value": "4837",
+   "page": 1,
+   "quote": "Reason Code: 4837",
+   "confidence": 0.96
+  },
+  "dispute_amount": {
+   "value": 1310.0,
+   "page": 1,
+   "quote": "Disputed Amount: 1310.0",
+   "confidence": 0.93
+  },
+  "transaction_date": {
+   "value": "2026-08-17",
+   "page": 1,
+   "quote": "Transaction Date: 2026-08-17",
+   "confidence": 0.95
+  },
+  "order_number": {
+   "value": "ORD-94514",
+   "page": 1,
+   "quote": "Order Number: ORD-94514",
+   "confidence": 0.95
+  },
+  "evidence_types": {
+   "value": [
+    "avs/cvv match",
+    "3ds authentication",
+    "ip/device match"
+   ],
+   "page": 1,
+   "quote": "Description: Authorization record showing AVS match and CVV match",
+   "confidence": 0.9
+  },
+  "rebuttal_basis": {
+   "value": "authorized",
+   "page": 1,
+   "quote": "Rebuttal: Our position: the transaction was authorized by the cardholder, as the attached records show.",
+   "confidence": 0.92
+  }
+ }
+}

@@ -1,0 +1,29 @@
+{
+  "type": "chargeback_response",
+  "caseNumber": "CB-2026-247732",
+  "submittedBy": "portal",
+  "merchant": {
+    "name": "Maple & Main Bakery LLC",
+    "merchantId": "800078901234"
+  },
+  "network": "Mastercard",
+  "reasonCode": "4837",
+  "disputedAmount": 1310.0,
+  "transactionDate": "2026-08-17",
+  "orderNumber": "ORD-94514",
+  "rebuttal": "Our position: the transaction was authorized by the cardholder, as the attached records show.",
+  "evidence": [
+    {
+      "type": "authorization_record",
+      "description": "Authorization record showing AVS match and CVV match"
+    },
+    {
+      "type": "three_ds",
+      "description": "3-D Secure authentication result"
+    },
+    {
+      "type": "session_log",
+      "description": "Order log with IP address and device ID"
+    }
+  ]
+}

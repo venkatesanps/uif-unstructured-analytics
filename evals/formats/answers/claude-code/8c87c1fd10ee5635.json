@@ -1,0 +1,69 @@
+{
+ "request_id": "8c87c1fd10ee5635",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "processor_name": {
+   "value": "Northwind Payments",
+   "page": 1,
+   "quote": "Processor: Northwind Payments",
+   "confidence": 0.93
+  },
+  "merchant_legal_name": {
+   "value": "Blue Harbor Coffee LLC",
+   "page": 1,
+   "quote": "Merchant Name: Blue Harbor Coffee LLC",
+   "confidence": 0.93
+  },
+  "mid": {
+   "value": "800012345678",
+   "page": 1,
+   "quote": "Merchant ID (MID): 800012345678",
+   "confidence": 0.93
+  },
+  "statement_period": {
+   "value": {
+    "start": "2026-07-01",
+    "end": "2026-07-31"
+   },
+   "page": 1,
+   "quote": "Statement Period: 07/01/2026 to 07/31/2026",
+   "confidence": 0.93
+  },
+  "gross_volume": {
+   "value": 249651.0,
+   "page": 1,
+   "quote": "Total Gross Sales: $249,651.00",
+   "confidence": 0.93
+  },
+  "transaction_count": {
+   "value": 2793,
+   "page": 1,
+   "quote": "Total Transactions: 2,793",
+   "confidence": 0.93
+  },
+  "refund_volume": {
+   "value": 8762.76,
+   "page": 1,
+   "quote": "Refunds: $8,762.76",
+   "confidence": 0.91
+  },
+  "chargeback_count": {
+   "value": 22,
+   "page": 1,
+   "quote": "Chargebacks: 22",
+   "confidence": 0.91
+  },
+  "chargeback_volume": {
+   "value": 1965.86,
+   "page": 1,
+   "quote": "Chargeback Amount: $1,965.86",
+   "confidence": 0.91
+  },
+  "total_fees": {
+   "value": 6420.64,
+   "page": 1,
+   "quote": "Total Fees: $6,420.64",
+   "confidence": 0.93
+  }
+ }
+}

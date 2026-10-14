@@ -1,53 +1,53 @@
 {
- "request_id": "5aef588e91d89c29",
+ "request_id": "7bef8ed586cecb75",
  "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
  "fields": {
   "case_number": {
-   "value": "CB-2026-343224",
+   "value": "CB-2026-818461",
    "page": 1,
-   "quote": "Case Number: CB-2026-343224",
+   "quote": "Case Number: CB-2026-818461",
    "confidence": 0.98
   },
   "merchant_legal_name": {
-   "value": "Ridgeline Outdoor Supply Inc",
+   "value": "Lone Star Auto Detailing LLC",
    "page": 1,
-   "quote": "Merchant Name: Ridgeline Outdoor Supply Inc",
+   "quote": "Merchant: Lone Star Auto Detailing LLC",
    "confidence": 0.97
   },
   "mid": {
-   "value": "800023456789",
+   "value": "800056789012",
    "page": 1,
-   "quote": "Merchant ID: 800023456789",
+   "quote": "MID: 800056789012",
    "confidence": 0.97
   },
   "card_network": {
    "value": "visa",
    "page": 1,
-   "quote": "Network: Visa",
+   "quote": "Card Network: Visa",
    "confidence": 0.97
   },
   "reason_code": {
    "value": "13.1",
    "page": 1,
-   "quote": "Reason: 13.1 - Merchandise/Services Not Received",
+   "quote": "Reason Code: 13.1 (Merchandise/Services Not Received)",
    "confidence": 0.97
   },
   "dispute_amount": {
-   "value": 66.17,
+   "value": 238.4,
    "page": 1,
-   "quote": "Amount in Dispute: $66.17",
+   "quote": "Disputed Amount: $238.40",
    "confidence": 0.97
   },
   "transaction_date": {
-   "value": "2026-08-08",
+   "value": "2026-08-06",
    "page": 1,
-   "quote": "Original Sale Date: 08/08/2026",
+   "quote": "Transaction Date: 2026-08-06",
    "confidence": 0.96
   },
   "order_number": {
-   "value": "ORD-96313",
+   "value": "ORD-74262",
    "page": 1,
-   "quote": "Order #: ORD-96313",
+   "quote": "Order Number: ORD-74262",
    "confidence": 0.96
   },
   "evidence_types": {
@@ -63,7 +63,7 @@
   "rebuttal_basis": {
    "value": "delivered",
    "page": 1,
-   "quote": "Rebuttal: Our position: the order was delivered to the cardholder's address before the dispute was filed.",
+   "quote": "Our position: the order was delivered to the cardholder's address before the dispute was filed.",
    "confidence": 0.93
   }
  }

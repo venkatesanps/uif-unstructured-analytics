@@ -1,0 +1,28 @@
+{
+  "file": "merchant/statement_export.xlsx",
+  "source_group": "merchant",
+  "doc_type": "processor_statement",
+  "fields": {
+    "processor_name": "Northwind Payments",
+    "merchant_legal_name": "Pinecrest Dental Group PLLC",
+    "mid": "800034567890",
+    "statement_period": {
+      "start": "2026-06-01",
+      "end": "2026-06-30"
+    },
+    "gross_volume": 1325748.63,
+    "transaction_count": 10433,
+    "refund_volume": 33844.02,
+    "chargeback_count": 120,
+    "chargeback_volume": 15248.69,
+    "total_fees": 35370.36
+  },
+  "merchant_id": "M0003",
+  "format": "xlsx (3 sheets, currency formats)",
+  "flags": [
+    "planted_pan"
+  ],
+  "raw_identifiers": [
+    "4111111111111111"
+  ]
+}
