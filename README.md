@@ -5,6 +5,8 @@ emails with attachments, scans) into typed,
 evidence-linked facts and analytics marts. Same code runs on a laptop (synthetic data, DuckDB,
 rules or Ollama) and in AWS (S3, Textract, Comprehend, Bedrock, Step Functions, Snowflake).
 
+**Reference notes:** design, build log, results, runbooks, decisions and open items are in [`docs/`](docs/README.md).
+
 ```
 landing → intake → normalize → guard → classify → extract → resolve → validate → publish → marts
                     (OCR/email)  (PAN/PII    (keywords,   (schema +   (MID,      (grounding,  (DuckDB |
