@@ -1,0 +1,50 @@
+{
+ "request_id": "d0f1d33e17523278",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-7701",
+   "page": 1,
+   "quote": "on case R C 2026 7701.",
+   "confidence": 0.9
+  },
+  "merchant_name": {
+   "value": "Pinecrest Dental Group PLLC",
+   "page": 1,
+   "quote": "Merchant, Pinecrest Dental Group P L L C.",
+   "confidence": 0.9
+  },
+  "analyst": {
+   "value": "K. Nguyen",
+   "page": 1,
+   "quote": "Analyst, K Nguyen.",
+   "confidence": 0.88
+  },
+  "review_date": {
+   "value": "2026-10-07",
+   "page": 1,
+   "quote": "Review date, October seventh, two thousand twenty six.",
+   "confidence": 0.92
+  },
+  "risk_themes": {
+   "value": [
+    "chargeback spike"
+   ],
+   "page": 1,
+   "quote": "The chargeback ratio reached two point eight percent last month.",
+   "confidence": 0.88
+  },
+  "recommended_action": {
+   "value": "escalate",
+   "page": 1,
+   "quote": "Recommendation, escalate.",
+   "confidence": 0.93
+  },
+  "exposure_estimate": {
+   "value": 92500.0,
+   "page": 1,
+   "quote": "Exposure estimate, ninety two thousand five hundred dollars.",
+   "confidence": 0.92
+  }
+ }
+}

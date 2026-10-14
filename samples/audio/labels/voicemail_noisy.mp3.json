@@ -1,0 +1,17 @@
+{
+  "file": "merchant/voicemail_noisy.mp3",
+  "source_group": "merchant",
+  "doc_type": "unknown",
+  "fields": {},
+  "merchant_id": null,
+  "format": "mp3",
+  "flags": [
+    "audio",
+    "noise"
+  ],
+  "tts_engine": "espeak",
+  "reference_transcript": "Hi, this is Dana from Maple and Main Bakery. Our deposits for the last two days have not arrived and we are short for payroll on Friday. Please call me back at four six nine, five five five, zero one one zero. Thanks.",
+  "raw_identifiers": [
+    "4695550110"
+  ]
+}

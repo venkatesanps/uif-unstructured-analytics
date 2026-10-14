@@ -75,9 +75,11 @@ class S3Store:
 class TextractOCR:
     """Sync API for images and single-page PDFs; async job for multi-page PDFs (needs S3)."""
 
-    def __init__(self, store: S3Store | None = None, region: str | None = None, poll_s: float = 2.0):
+    def __init__(self, store: S3Store | None = None, region: str | None = None, poll_s: float = 2.0,
+                 transcriber=None):
         self.textract = _client("textract", region)
         self.store, self.poll_s = store, poll_s
+        self.transcriber = transcriber or (TranscribeTranscriber(store, region) if store else None)
 
     @staticmethod
     def _pages_from_blocks(blocks: list[dict]) -> list[Page]:
@@ -96,6 +98,10 @@ class TextractOCR:
 
         if mime_type in fmt.ZIP_TYPES:  # archive members: images/PDFs through Textract too
             return fmt.zip_pages(data, self.to_pages, fmt.guess_mime)
+        if mime_type.startswith("audio/"):
+            if not self.transcriber:
+                raise NotImplementedError("audio: Transcribe needs the S3 store")
+            return fmt.audio_pages(data, file_name, self.transcriber)
         if not (mime_type == "application/pdf" or mime_type.startswith("image/")):
             from uif.providers.local import LocalOCR  # text, email and html need no OCR
 
@@ -220,3 +226,65 @@ class StageWarehouse:
         stamp = time.strftime("%Y%m%dT%H%M%S")
         self.store.put_bytes(f"{self.prefix}/{table.lower()}/{part}-{stamp}.ndjson", body.encode())
         return len(rows)
+
+
+class TranscribeTranscriber:
+    """Amazon Transcribe for call recordings and voice memos. Audio is staged under restricted/ and
+    the job writes its JSON there too: a raw transcript can hold a card number read aloud, so it
+    stays inside the PCI boundary until the guard has run."""
+
+    name = "transcribe"
+    FORMATS = {"audio/wav": "wav", "audio/x-wav": "wav", "audio/mpeg": "mp3", "audio/mp4": "mp4",
+               "audio/x-m4a": "mp4", "audio/flac": "flac", "audio/ogg": "ogg", "audio/webm": "webm"}
+
+    def __init__(self, store: S3Store, region: str | None = None, max_speakers: int = 2, poll_s: float = 5.0,
+                 client=None):
+        self.store, self.max_speakers, self.poll_s = store, max_speakers, poll_s
+        self.client = client or _client("transcribe", region)
+
+    def available(self) -> bool:
+        return True
+
+    @staticmethod
+    def render(result: dict) -> str:
+        """Speaker-labelled lines when diarization ran ("spk_0: ..."), else the plain transcript."""
+        res = result.get("results", {})
+        segs = res.get("audio_segments") or []
+        if segs and any("speaker_label" in s for s in segs):
+            lines, last = [], None
+            for s in segs:
+                spk = s.get("speaker_label", "spk")
+                if spk == last and lines:
+                    lines[-1] += " " + s.get("transcript", "")
+                else:
+                    lines.append(f"{spk}: {s.get('transcript', '')}")
+                last = spk
+            return "\n".join(lines)
+        return " ".join(t.get("transcript", "") for t in res.get("transcripts", []))
+
+    def transcribe(self, data: bytes, file_name: str):
+        import uuid
+
+        from uif.providers.formats import TranscriptResult, guess_mime
+
+        fmt = self.FORMATS.get(guess_mime(file_name))
+        if not fmt:
+            raise NotImplementedError(f"audio: Transcribe does not take {file_name}")
+        job = f"uif-{uuid.uuid4().hex[:20]}"
+        audio_key = f"restricted/asr-staging/{job}/{file_name}"
+        out_key = f"restricted/asr-output/{job}.json"
+        self.store.put_bytes(audio_key, data)
+        settings = {"ShowSpeakerLabels": True, "MaxSpeakerLabels": self.max_speakers} if self.max_speakers > 1 else {}
+        self.client.start_transcription_job(
+            TranscriptionJobName=job, LanguageCode="en-US", MediaFormat=fmt,
+            Media={"MediaFileUri": self.store.uri(audio_key)},
+            OutputBucketName=self.store.bucket, OutputKey=self.store._k(out_key), **({"Settings": settings} if settings else {}))
+        while True:
+            status = self.client.get_transcription_job(TranscriptionJobName=job)["TranscriptionJob"]
+            state = status["TranscriptionJobStatus"]
+            if state == "COMPLETED":
+                break
+            if state == "FAILED":
+                raise RuntimeError(f"Transcribe job failed: {status.get('FailureReason')}")
+            time.sleep(self.poll_s)
+        return TranscriptResult(self.render(json.loads(self.store.get_bytes(out_key))), self.name)

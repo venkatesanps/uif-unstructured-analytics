@@ -2,6 +2,10 @@
 
 One line per lesson, newest first: date — what happened — what we changed.
 
+- 2026-10-13 — A card number read aloud on a call stays as words in a transcript and the digit-based guard can't see it (PCI leak) — spoken digit runs become numerals before the guard; phone numbers too.
+- 2026-10-13 — Role-named speaker labels ("Merchant: ...") collided with the schema's "Merchant:" field hint and produced a garbage value — transcripts use Transcribe-style spk_0/spk_1 labels.
+- 2026-10-13 — Correct canonical answers from transcripts ("CB-2026-814273" from "C B 2026 814273", 13.1 from "thirteen point one") failed value-in-quote — the check compares letters/digits only and accepts spoken numbers; wrong values still fail.
+- 2026-10-13 — pocketsphinx produces nonsense on synthetic voices — low-accuracy engines flag their transcripts and every fact goes to review; never auto-accept from them.
 - 2026-10-13 — Tesseract ends its output with a form feed; splitting multi-page TIFFs on it also trimmed single images, which changed a golden request ID — the drift test caught it; regenerate and re-answer instead of hand-editing.
 - 2026-10-13 — An attached email has no filename, so forwarded messages showed up as `attachment-1` — they're now labelled `forwarded email: <subject>`.
 - 2026-10-13 — HTML tables flattened into run-on text and lost their labels — `<th>Label</th><td>Value</td>` now reads as `Label: Value`, and lines are trimmed.

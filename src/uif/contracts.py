@@ -58,7 +58,8 @@ class Page(BaseModel):
 class NormalizedDoc(BaseModel):
     doc_id: str
     pages: list[Page]
-    method: str  # e.g. "pdfplumber", "tesseract", "textract", "email", "text"
+    method: str  # e.g. "pdfplumber", "tesseract", "textract", "email", "text", "transcript:<engine>"
+    quality_flags: list[str] = []  # e.g. asr_low_accuracy: every fact from this doc goes to review
 
 
 class GuardFinding(BaseModel):
@@ -73,6 +74,7 @@ class GuardedDoc(BaseModel):
     findings: list[GuardFinding] = []
     sensitivity_tier: SensitivityTier
     quarantined: bool = False
+    quality_flags: list[str] = []
 
 
 class Classification(BaseModel):

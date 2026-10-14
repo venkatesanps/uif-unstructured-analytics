@@ -224,15 +224,38 @@ def zip_pages(data: bytes, to_pages: Callable[[bytes, str, str], tuple[list[Page
 # ----------------------------------------------------------------------------- audio
 
 
-class Transcriber:
-    """Speech-to-text for call recordings. Locally: whisper.cpp's CLI if installed
-    (`whisper-cli` + a model at UIF_WHISPER_MODEL); in AWS: Amazon Transcribe."""
+class TranscriptResult:
+    def __init__(self, text: str, engine: str, quality_flags: list[str] | None = None):
+        self.text, self.engine, self.quality_flags = text, engine, quality_flags or []
 
-    def transcribe(self, data: bytes, file_name: str) -> str:
+
+class Transcriber:
+    """Speech-to-text for call recordings and voice memos."""
+
+    name = "none"
+
+    def available(self) -> bool:
+        return False
+
+    def transcribe(self, data: bytes, file_name: str) -> TranscriptResult:
         raise NotImplementedError
 
 
+def _to_wav16k(data: bytes, file_name: str, tmp: str) -> Path:
+    if not shutil.which("ffmpeg"):
+        raise NotImplementedError("audio: ffmpeg is required to decode audio")
+    src, wav = Path(tmp) / Path(file_name).name, Path(tmp) / "audio16k.wav"
+    src.write_bytes(data)
+    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(src), "-ar", "16000", "-ac", "1", str(wav)],
+                   check=True)
+    return wav
+
+
 class WhisperCppTranscriber(Transcriber):
+    """Good local accuracy: whisper.cpp CLI (`whisper-cli`) + a ggml model at UIF_WHISPER_MODEL."""
+
+    name = "whisper.cpp"
+
     def __init__(self, binary: str | None = None, model: str | None = None):
         self.binary = binary or shutil.which("whisper-cli") or shutil.which("whisper-cpp")
         self.model = model or os.environ.get("UIF_WHISPER_MODEL")
@@ -240,20 +263,77 @@ class WhisperCppTranscriber(Transcriber):
     def available(self) -> bool:
         return bool(self.binary and self.model and Path(self.model).exists() and shutil.which("ffmpeg"))
 
-    def transcribe(self, data: bytes, file_name: str) -> str:
+    def transcribe(self, data: bytes, file_name: str) -> TranscriptResult:
         if not self.available():
             raise NotImplementedError("audio: install whisper.cpp (whisper-cli) and ffmpeg, and set "
                                       "UIF_WHISPER_MODEL to a ggml model file; in AWS, Transcribe is used")
         with tempfile.TemporaryDirectory() as tmp:
-            src, wav = Path(tmp) / Path(file_name).name, Path(tmp) / "audio16k.wav"
-            src.write_bytes(data)
-            subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(src), "-ar", "16000", "-ac", "1", str(wav)],
-                           check=True)
+            wav = _to_wav16k(data, file_name, tmp)
             out = subprocess.run([self.binary, "-m", self.model, "-f", str(wav), "-nt", "-np"],
                                  capture_output=True, text=True, check=True)
-            return out.stdout.strip()
+        return TranscriptResult(out.stdout.strip(), self.name)
 
 
-def audio_pages(data: bytes, file_name: str, transcriber: Transcriber) -> list[Page]:
-    text = transcriber.transcribe(data, file_name)
-    return [Page(page=1, text=f"[transcript of {file_name}]\n{text}")]
+class PocketSphinxTranscriber(Transcriber):
+    """Offline fallback whose English model ships inside the pip package. Accuracy is low, so its
+    transcripts carry the `asr_low_accuracy` flag and every fact from them goes to human review."""
+
+    name = "pocketsphinx"
+
+    def available(self) -> bool:
+        try:
+            import pocketsphinx  # noqa: F401
+        except ImportError:
+            return False
+        return bool(shutil.which("ffmpeg"))
+
+    def transcribe(self, data: bytes, file_name: str) -> TranscriptResult:
+        if not self.available():
+            raise NotImplementedError("audio: pocketsphinx not installed (pip install pocketsphinx)")
+        import wave
+
+        from pocketsphinx import Decoder
+
+        with tempfile.TemporaryDirectory() as tmp:
+            wav = _to_wav16k(data, file_name, tmp)
+            with wave.open(str(wav), "rb") as w:
+                raw = w.readframes(w.getnframes())
+        dec = Decoder(samprate=16000)
+        dec.start_utt()
+        dec.process_raw(raw, full_utt=True)
+        dec.end_utt()
+        return TranscriptResult(dec.hyp().hypstr if dec.hyp() else "", self.name, ["asr_low_accuracy"])
+
+
+class ChainTranscriber(Transcriber):
+    """First available engine wins: the best one installed on this machine."""
+
+    def __init__(self, engines: list[Transcriber]):
+        self.engines = engines
+
+    def available(self) -> bool:
+        return any(e.available() for e in self.engines)
+
+    def transcribe(self, data: bytes, file_name: str) -> TranscriptResult:
+        for engine in self.engines:
+            if engine.available():
+                return engine.transcribe(data, file_name)
+        raise NotImplementedError("audio: no transcriber available. Install whisper.cpp (+ UIF_WHISPER_MODEL) "
+                                  "for good accuracy, or `pip install pocketsphinx` for a low-accuracy fallback; "
+                                  "in AWS, Transcribe is used")
+
+
+def default_transcriber() -> Transcriber:
+    return ChainTranscriber([WhisperCppTranscriber(), PocketSphinxTranscriber()])
+
+
+def audio_pages(data: bytes, file_name: str, transcriber: Transcriber) -> tuple[list[Page], str, list[str]]:
+    """Transcript as one page. Spoken digit runs become numerals first, so a card or phone number read
+    aloud is visible to the guard ("four one one one, ..." -> "4111 ...")."""
+    from uif.values import spoken_digits_to_numerals
+
+    res = transcriber.transcribe(data, file_name)
+    note = "; low accuracy, verify against the recording" if "asr_low_accuracy" in res.quality_flags else ""
+    text = spoken_digits_to_numerals(res.text)
+    return ([Page(page=1, text=f"[transcript of {file_name}; engine: {res.engine}{note}]\n{text}")],
+            f"transcript:{res.engine}", res.quality_flags)

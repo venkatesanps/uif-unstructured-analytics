@@ -1,0 +1,27 @@
+{
+  "file": "merchant/merchant_call.wav",
+  "source_group": "merchant",
+  "doc_type": "dispute_rebuttal",
+  "fields": {
+    "case_number": "CB-2026-814273",
+    "merchant_legal_name": "Blue Harbor Coffee LLC",
+    "mid": "800012345678",
+    "card_network": "visa",
+    "reason_code": "13.1",
+    "dispute_amount": 248.5,
+    "transaction_date": "2026-08-09",
+    "order_number": "ORD-55120",
+    "evidence_types": [],
+    "rebuttal_basis": "delivered"
+  },
+  "merchant_id": "M0001",
+  "format": "wav",
+  "flags": [
+    "audio"
+  ],
+  "tts_engine": "espeak",
+  "reference_transcript": "spk_0: Thank you for calling merchant disputes. Can I have the case number?\nspk_1: Yes. It's C B two zero two six, eight one four two seven three. This is Blue Harbor Coffee L L C, merchant I D eight zero zero zero, one two three four, five six seven eight.\nspk_0: Thanks. I see a Visa chargeback, reason code thirteen point one, for two hundred forty eight dollars and fifty cents, on a sale from August ninth, two thousand twenty six. What is your rebuttal?\nspk_1: The order was delivered to the cardholder's address on August twelfth. The order number is O R D five five one two zero. For our records, the test card we used was four one one one, one one one one, one one one one, one one one one.\nspk_0: Please don't read card numbers on this line. Upload the invoice and the carrier proof of delivery to the portal, and I will note that the order was delivered.",
+  "raw_identifiers": [
+    "4111111111111111"
+  ]
+}

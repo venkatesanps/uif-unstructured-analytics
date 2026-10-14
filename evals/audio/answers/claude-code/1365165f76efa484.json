@@ -1,0 +1,66 @@
+{
+ "request_id": "1365165f76efa484",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-814273",
+   "page": 1,
+   "quote": "It's C B 2026 814273.",
+   "confidence": 0.9
+  },
+  "merchant_legal_name": {
+   "value": "Blue Harbor Coffee LLC",
+   "page": 1,
+   "quote": "This is Blue Harbor Coffee L L C",
+   "confidence": 0.9
+  },
+  "mid": {
+   "value": "800012345678",
+   "page": 1,
+   "quote": "merchant I D 8000 1234 5678",
+   "confidence": 0.9
+  },
+  "card_network": {
+   "value": "visa",
+   "page": 1,
+   "quote": "I see a Visa chargeback",
+   "confidence": 0.93
+  },
+  "reason_code": {
+   "value": "13.1",
+   "page": 1,
+   "quote": "reason code thirteen point one",
+   "confidence": 0.9
+  },
+  "dispute_amount": {
+   "value": 248.5,
+   "page": 1,
+   "quote": "for two hundred forty eight dollars and fifty cents",
+   "confidence": 0.92
+  },
+  "transaction_date": {
+   "value": "2026-08-09",
+   "page": 1,
+   "quote": "on a sale from August ninth, two thousand twenty six",
+   "confidence": 0.9
+  },
+  "order_number": {
+   "value": "ORD-55120",
+   "page": 1,
+   "quote": "The order number is O R D 55120.",
+   "confidence": 0.88
+  },
+  "evidence_types": {
+   "value": [],
+   "page": null,
+   "quote": null,
+   "confidence": 0.0
+  },
+  "rebuttal_basis": {
+   "value": "delivered",
+   "page": 1,
+   "quote": "The order was delivered to the cardholder's address on August twelfth.",
+   "confidence": 0.9
+  }
+ }
+}

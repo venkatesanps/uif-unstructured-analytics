@@ -33,7 +33,7 @@ def build_providers(cfg: dict[str, Any]) -> Providers:
 
     o = cfg["ocr"]["kind"]
     if o == "local":
-        ocr = local.LocalOCR()
+        ocr = local.LocalOCR(transcriber=build_transcriber(cfg))
     elif o == "textract":
         from uif.providers.aws import TextractOCR
 
@@ -92,3 +92,22 @@ def build_llm(cfg: dict[str, Any], kind: str, store=None):
         return BedrockLLM(bc.get("model_id"), cfg.get("region"), int(bc.get("max_tokens", 4096)),
                           tool_choice=bc.get("tool_choice", "auto"))
     raise ValueError(f"unknown llm kind {kind}")
+
+
+def build_transcriber(cfg: dict[str, Any]):
+    """ocr.transcriber: auto (best installed: whisper.cpp, then pocketsphinx) | whisper | pocketsphinx |
+    reference:<labels dir> (replays labelled scripts; tests extraction apart from recognition)."""
+    from uif.providers import formats as fmt
+
+    choice = str((cfg.get("ocr") or {}).get("transcriber") or "auto")
+    if choice == "auto":
+        return fmt.default_transcriber()
+    if choice == "whisper":
+        return fmt.WhisperCppTranscriber()
+    if choice == "pocketsphinx":
+        return fmt.PocketSphinxTranscriber()
+    if choice.startswith("reference:"):
+        from uif.synth_audio import ReferenceTranscriber
+
+        return ReferenceTranscriber(choice.split(":", 1)[1])
+    raise ValueError(f"unknown transcriber {choice}")

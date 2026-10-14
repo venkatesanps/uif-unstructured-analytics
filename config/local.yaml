@@ -8,6 +8,7 @@ store:
 
 ocr:
   kind: local            # pdfplumber for native PDFs, tesseract CLI for scans and images
+  transcriber: ${UIF_TRANSCRIBER:-auto}   # auto | whisper | pocketsphinx | reference:<labels dir>
 
 guard:
   kind: regex            # Luhn-checked PAN, SSN, bank account, email, phone

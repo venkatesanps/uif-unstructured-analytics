@@ -1,0 +1,51 @@
+{
+ "request_id": "a59b67beddaa0651",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-4412",
+   "page": 1,
+   "quote": "Case number R C 2026 4412.",
+   "confidence": 0.9
+  },
+  "merchant_name": {
+   "value": "Ridgeline Outdoor Supply Inc",
+   "page": 1,
+   "quote": "Merchant, Ridgeline Outdoor Supply Inc.",
+   "confidence": 0.93
+  },
+  "analyst": {
+   "value": "P. Raman",
+   "page": 1,
+   "quote": "Analyst, P Raman.",
+   "confidence": 0.88
+  },
+  "review_date": {
+   "value": "2026-10-05",
+   "page": 1,
+   "quote": "Review date, October fifth, two thousand twenty six.",
+   "confidence": 0.92
+  },
+  "risk_themes": {
+   "value": [
+    "refund abuse",
+    "card testing"
+   ],
+   "page": 1,
+   "quote": "The refund rate has climbed for three straight months.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "reserve",
+   "page": 1,
+   "quote": "Recommendation, reserve.",
+   "confidence": 0.93
+  },
+  "exposure_estimate": {
+   "value": 185000.0,
+   "page": 1,
+   "quote": "Exposure estimate, one hundred eighty five thousand dollars.",
+   "confidence": 0.92
+  }
+ }
+}

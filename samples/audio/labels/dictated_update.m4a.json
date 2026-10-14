@@ -1,0 +1,24 @@
+{
+  "file": "internal/dictated_update.m4a",
+  "source_group": "internal",
+  "doc_type": "risk_analyst_note",
+  "fields": {
+    "case_id": "RC-2026-7701",
+    "merchant_name": "Pinecrest Dental Group PLLC",
+    "analyst": "K. Nguyen",
+    "review_date": "2026-10-07",
+    "risk_themes": [
+      "chargeback spike"
+    ],
+    "recommended_action": "escalate",
+    "exposure_estimate": 92500.0
+  },
+  "merchant_id": "M0003",
+  "format": "m4a",
+  "flags": [
+    "audio"
+  ],
+  "tts_engine": "espeak",
+  "reference_transcript": "Quick update for the risk review on case R C two zero two six, seven seven zero one. Merchant, Pinecrest Dental Group P L L C. Analyst, K Nguyen. Review date, October seventh, two thousand twenty six. The chargeback ratio reached two point eight percent last month. Recommendation, escalate. Exposure estimate, ninety two thousand five hundred dollars.",
+  "raw_identifiers": []
+}

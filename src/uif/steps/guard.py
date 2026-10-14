@@ -19,7 +19,8 @@ def run(ctx: Context, doc_id: str) -> StepResult:
     kinds = {f.kind for f in findings}
     tier = SensitivityTier.restricted if kinds & _RESTRICTED_KINDS else (
         SensitivityTier.confidential if findings else SensitivityTier.internal)
-    guarded = GuardedDoc(doc_id=doc_id, pages=pages, findings=findings, sensitivity_tier=tier)
+    guarded = GuardedDoc(doc_id=doc_id, pages=pages, findings=findings, sensitivity_tier=tier,
+                         quality_flags=norm.quality_flags)
     key = ctx.put_model("guarded", guarded, doc_id=doc_id)
     env = ctx.get_model("envelope", DocEnvelope, doc_id=doc_id)
     env.sensitivity_tier = tier

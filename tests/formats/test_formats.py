@@ -142,20 +142,4 @@ def test_csv_dialects_and_json_flattening():
     text = fmt.json_pages(json.dumps({"caseNumber": "CB-2026-000001", "merchant": {"merchantId": "8000"}}).encode())[0].text
     assert "Case Number: CB-2026-000001" in text and "Merchant Id: 8000" in text
 
-
-def test_audio_uses_the_transcriber_and_halts_cleanly_without_one(ctx):
-    class FakeTranscriber(fmt.Transcriber):
-        def transcribe(self, data, file_name):
-            return "Case RC 2026 0001. Recommendation monitor."
-
-    pages, method = LocalOCR(transcriber=FakeTranscriber()).to_pages(b"RIFF....", "audio/wav", "memo.wav")
-    assert method == "transcript" and "Recommendation monitor" in pages[0].text
-    unavailable = fmt.WhisperCppTranscriber(binary="/nonexistent/whisper-cli", model="/nonexistent/model.bin")
-    with pytest.raises(NotImplementedError, match="whisper"):
-        LocalOCR(transcriber=unavailable).to_pages(b"RIFF....", "audio/wav", "memo.wav")
-    from uif.runner import process_bytes
-
-    ctx.providers.ocr = LocalOCR(transcriber=unavailable)
-    run = process_bytes(ctx, b"RIFF fake audio", "memo.wav", "internal", "test")
-    last = run.results[-1]
-    assert last.step == "normalize" and last.halt and "whisper" in last.detail
+# audio: see tests/audio/test_audio.py

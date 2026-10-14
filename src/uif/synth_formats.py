@@ -7,8 +7,7 @@ request IDs. Same label shape as synth.py, so `uif eval samples/formats` scores 
              card number), CSV export, rebuttal upload (ZIP: Word letter + PDF invoice + JPEG photo),
              forwarded rebuttal (EML inside EML), dispute-portal API payload (JSON)
   internal/  Word memo (DOCX, planted SSN), HTML-only email, case-system export (HTML table),
-             team chat export (JSON), Markdown note, dictated voice memo (WAV, only where a
-             text-to-speech engine exists)
+             team chat export (JSON), Markdown note (audio: see synth_audio.py)
   external/  adverse-media web page (HTML), network operating bulletin (PDF): unknown types"""
 
 from __future__ import annotations
@@ -329,18 +328,7 @@ def generate_formats(out: str | Path, seed: int = 2026) -> dict:
     add("internal/note.md", md.encode(), "internal", "risk_analyst_note",
         _note_fields(rng, m, analyst, date, themes, action, exposure, case_id), m[0], "markdown")
 
-    # 13. dictated voice memo, only where a TTS engine exists (macOS `say`, espeak)
-    m, case_id, analyst, date, themes, action, exposure = note_params(5)
-    speech = (f"Risk review voice memo. Case {case_id.replace('-', ' ')}. Merchant {m[2]}. Analyst {analyst}. "
-              f"{THEME_SENTENCES[themes[0]].format(pct=2.0, x=4)} Recommendation: {action.replace('_', ' ')}. "
-              f"Exposure estimate {int(exposure):,} dollars.")
-    wav = out / "internal" / "voice_memo.wav"
-    if _tts_wav(speech, wav):
-        labels.append({"file": "internal/voice_memo.wav", "source_group": "internal", "doc_type": "risk_analyst_note",
-                       "fields": _note_fields(rng, m, analyst, date, [themes[0]], action, exposure, case_id) | {"review_date": None},
-                       "merchant_id": m[0], "format": "wav (dictated memo)", "flags": ["audio"], "raw_identifiers": []})
-    else:
-        skipped.append("internal/voice_memo.wav: no text-to-speech engine here (macOS `say` or espeak needed)")
+    # Audio lives in its own set (samples/audio, synth_audio.py) so this set is identical on every machine.
 
     # 14-15. external documents of types the registry doesn't know
     article = f"""<!doctype html><html><head><title>Local news</title><script>var ads=[1,2,3]</script></head><body>

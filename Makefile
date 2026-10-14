@@ -5,7 +5,7 @@ LLM     ?= rules
 export UIF_HOME := $(CURDIR)
 export PYTHONPATH := $(CURDIR)/src
 
-.PHONY: setup synth samples run eval eval-replay eval-samples parity test ci review clean up down
+.PHONY: setup synth samples audio run eval eval-replay eval-samples eval-audio parity test ci review clean up down
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -19,6 +19,10 @@ synth:
 samples:
 	$(BIN)/uif synth --formats --out samples/formats
 
+# speech recordings (needs espeak-ng or macOS `say`, plus ffmpeg)
+audio:
+	$(BIN)/uif synth --audio --out samples/audio
+
 run:
 	$(BIN)/uif run synthetic/merchant --source merchant --system onboarding_portal --llm $(LLM)
 	$(BIN)/uif run synthetic/dispute --source merchant --system disputes_portal --llm $(LLM)
@@ -31,7 +35,7 @@ eval:
 test:
 	$(BIN)/pytest -q
 
-ci: test eval eval-replay eval-samples
+ci: test eval eval-replay eval-samples eval-audio
 
 review:
 	$(BIN)/pip install -q streamlit && $(BIN)/streamlit run review_ui/app.py
@@ -62,3 +66,12 @@ eval-samples:
 	cp evals/formats/answers/claude-code/*.json .uif/samples-replay/store/handoff/responses/
 	UIF_STORE=.uif/samples-replay/store UIF_DUCKDB=.uif/samples-replay/uif.duckdb $(BIN)/uif eval samples/formats --llm handoff > .uif/samples-claude.json
 	@echo "sample evals passed gates: .uif/samples-rules.json, .uif/samples-claude.json"
+
+# Audio: reference transcripts (stand-in for a good recognizer) with the saved Claude answers.
+# Real recognition: UIF_TRANSCRIBER=whisper (whisper.cpp + UIF_WHISPER_MODEL) or pocketsphinx.
+eval-audio:
+	rm -rf .uif/audio-replay && mkdir -p .uif/audio-replay/store/handoff/responses
+	cp evals/audio/answers/claude-code/*.json .uif/audio-replay/store/handoff/responses/
+	UIF_TRANSCRIBER=reference:samples/audio/labels UIF_STORE=.uif/audio-replay/store UIF_DUCKDB=.uif/audio-replay/uif.duckdb \
+	  $(BIN)/uif eval samples/audio --llm handoff > .uif/audio-claude.json
+	@echo "audio eval passed gates: .uif/audio-claude.json"

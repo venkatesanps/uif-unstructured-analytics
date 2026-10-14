@@ -127,10 +127,10 @@ class LocalOCR:
     """Native PDFs via pdfplumber; scans and images via the tesseract CLI if installed."""
 
     def __init__(self, tesseract_cmd: str | None = None, transcriber=None):
-        from uif.providers.formats import WhisperCppTranscriber
+        from uif.providers.formats import default_transcriber
 
         self.tesseract = tesseract_cmd or shutil.which("tesseract")
-        self.transcriber = transcriber or WhisperCppTranscriber()
+        self.transcriber = transcriber or default_transcriber()
 
     def _tesseract_image(self, image_path: str) -> str:
         if not self.tesseract:
@@ -178,7 +178,7 @@ class LocalOCR:
         if mime_type in fmt.ZIP_TYPES:
             return fmt.zip_pages(data, self.to_pages, fmt.guess_mime)
         if mime_type.startswith("audio/"):
-            return fmt.audio_pages(data, file_name, self.transcriber), "transcript"
+            return fmt.audio_pages(data, file_name, self.transcriber)  # (pages, method, quality flags)
         if mime_type == "text/html":
             return _split_pages(_strip_html(data.decode("utf-8", "replace"))), "html"
         if mime_type.startswith("text/"):

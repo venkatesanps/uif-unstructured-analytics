@@ -26,7 +26,7 @@ from uif.contracts import (
     StepResult,
     Validated,
 )
-from uif.values import normalize, squash
+from uif.values import normalize, spoken_numbers, squash
 
 _NUM = re.compile(r"\(?-?\$?\d[\d,]*(?:\.\d+)?\)?")
 
@@ -49,9 +49,21 @@ def value_in_quote(data_type: str, norm: Any, quote: str, spec: dict | None = No
             v = normalize("money", tok)
             if v is not None:
                 nums.append(abs(v))
+        nums += [abs(v) for v in spoken_numbers(quote)]  # transcripts: "two point eight percent"
         return norm is not None and any(abs(abs(float(norm)) - n) < 0.005 for n in nums)
     if data_type in ("string", "enum"):
-        return squash(str(norm)) in squash(quote)
+        if squash(str(norm)) in squash(quote):
+            return True
+        # spoken or reformatted identifiers: "C B 2026 814273" supports CB-2026-814273,
+        # "Blue Harbor Coffee L L C" supports Blue Harbor Coffee LLC
+        alnum = lambda t: re.sub(r"[^a-z0-9]", "", str(t).lower())
+        if alnum(norm) and alnum(norm) in alnum(quote):
+            return True
+        # a numeric code said aloud: "reason code thirteen point one" supports 13.1
+        try:
+            return any(abs(float(norm) - v) < 1e-9 for v in spoken_numbers(quote))
+        except ValueError:
+            return False
     return True  # dates, ranges and lists are format-shifted; grounding of the quote is the check
 
 
@@ -93,7 +105,8 @@ def run(ctx: Context, doc_id: str) -> StepResult:
     cls = ctx.get_model("classification", Classification, doc_id=doc_id)
     ext = ctx.get_model("extraction", Extraction, doc_id=doc_id)
     link = ctx.get_model("entity", EntityLink, doc_id=doc_id)
-    pages = {p.page: p.text for p in ctx.get_model("guarded", GuardedDoc, doc_id=doc_id).pages}
+    guarded_doc = ctx.get_model("guarded", GuardedDoc, doc_id=doc_id)
+    pages = {p.page: p.text for p in guarded_doc.pages}
     tasks: list[ReviewTask] = []
 
     if cls.doc_type not in ctx.registry:
@@ -122,17 +135,23 @@ def run(ctx: Context, doc_id: str) -> StepResult:
         vocab = dt.fields[name].get("vocabulary")
         if ftype == "string_list" and vocab and norm:
             # one quote can't vouch for a whole list: every item needs its own phrase in the document
-            doc_text = squash(" ".join(pages.values()))
+            dehyphen = lambda t: squash(t.replace("-", " "))  # "small dollar" == "small-dollar" (transcripts)
+            doc_text = dehyphen(" ".join(pages.values()))
             known = {k.lower(): v for k, v in vocab.items()}
             for item in norm:
                 if item not in known:
                     reasons[name].append(f"item_not_in_vocabulary:{item}")
-                elif not any(squash(w) in doc_text for w in known[item]):
+                elif not any(dehyphen(w) in doc_text for w in known[item]):
                     reasons[name].append(f"item_not_in_document:{item}")
         if fv.confidence < dt.review_below(name, ctx.default_review_below):
             reasons[name].append("low_confidence")
         if ftype == "enum" and dt.fields[name].get("values") and norm not in dt.fields[name]["values"]:
             reasons[name].append("enum_out_of_range")
+
+    for flag in guarded_doc.quality_flags:  # e.g. low-accuracy transcript: nothing from it is auto-accepted
+        for name in reasons:
+            if name in norm_values:
+                reasons[name].append(f"source:{flag}")
 
     rule_failures = []
     for rule in dt.rules:
@@ -157,6 +176,9 @@ def run(ctx: Context, doc_id: str) -> StepResult:
         if reasons[name]:
             tasks.append(ReviewTask(task_id=_id(doc_id, "fact", name), doc_id=doc_id,
                                     fact_ids=[facts[-1].fact_id], reason=";".join(reasons[name])))
+    for flag in guarded_doc.quality_flags:
+        tasks.append(ReviewTask(task_id=_id(doc_id, "quality", flag), doc_id=doc_id, fact_ids=[],
+                                reason=f"source_quality:{flag}"))
     if missing:
         tasks.append(ReviewTask(task_id=_id(doc_id, "missing"), doc_id=doc_id, fact_ids=[],
                                 reason="missing_required:" + ",".join(missing)))

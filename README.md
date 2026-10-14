@@ -19,7 +19,7 @@ make setup             # venv + deps   (optional: brew install tesseract  -> sca
 make synth             # 19 labeled synthetic docs + data/merchant_master.csv + outcomes
 make run               # process them with the offline rules baseline
 make -s eval           # golden metrics + gates, JSON to stdout
-make test              # 72 tests: unit, contract, golden, adversarial, integration, aws (moto)
+make test              # 86 tests: unit, contract, golden, adversarial, integration, aws (moto)
 .venv/bin/uif sql "select * from mart_underwriting_variance"
 .venv/bin/uif sql "select * from mart_evidence_gaps"
 .venv/bin/uif review   # open review queue      (make review -> Streamlit reviewer UI)
@@ -113,7 +113,7 @@ schemas, hints and prompts apply whatever the container.
 | HTML | case-system export, news article | tag stripper; `<th>`/`<td>` → `Label: value` | scripts, styles, nav dropped |
 | JSON | portal API payload, team chat export | chat → transcript; other JSON → `Key: value` lines | `caseNumber` → `Case Number` |
 | Markdown / text | `note.md`, `synthetic/internal/*.txt` | text | |
-| Audio (WAV/MP3/M4A) | generated only where a TTS engine exists | whisper.cpp CLI locally, Transcribe in AWS | halts cleanly with a clear message if no transcriber |
+| Audio (WAV/MP3/M4A) | `samples/audio/` (see below) | whisper.cpp or pocketsphinx locally, Transcribe in AWS | spoken digits → numerals before the guard |
 
 Not covered: Outlook `.msg` (needs an extra library) and PowerPoint. Both are easy to add as readers
 when a real source needs them.
@@ -131,6 +131,42 @@ The rules baseline misses whatever isn't written as `Label: value`: Markdown bol
 transcript, an API payload with an unformatted amount. These go to review rather than being
 guessed. The same caveat as the golden set applies to the Claude column: same-session answers on
 clean synthetic documents.
+
+## Audio (call recordings and voice memos)
+
+`samples/audio/` holds four synthetic recordings (`make audio` regenerates them with espeak-ng, or
+macOS `say`, plus ffmpeg):
+
+| File | What it is | Doc type |
+| --- | --- | --- |
+| `internal/analyst_voice_memo.wav` (32 s) | analyst dictates a risk review | risk_analyst_note |
+| `merchant/merchant_call.wav` (62 s, 2 voices) | merchant rebuts a chargeback on the phone and reads a card number aloud | dispute_rebuttal |
+| `merchant/voicemail_noisy.mp3` (18 s, background noise) | merchant voicemail with a phone number | unknown → review |
+| `internal/dictated_update.m4a` (28 s) | short dictated update | risk_analyst_note |
+
+How audio flows: the transcriber (`ocr.transcriber` / `UIF_TRANSCRIBER`) produces the text. That's
+whisper.cpp when installed, else pocketsphinx (flagged low-accuracy), and Transcribe with speaker
+labels in AWS. Spoken digit runs then become numerals ("four one one one, …" → `4111 …`), so the
+guard tokenizes a card or phone number read aloud. Raw audio and Transcribe's output stay under
+`restricted/`. The validator accepts spoken amounts, dates and identifiers ("two hundred forty
+eight dollars and fifty cents", "C B 2026 814273"), and sends every fact from a low-accuracy
+transcript to review.
+
+Results (2026-10-13, `evals/audio/`):
+
+| | Real recognizer (pocketsphinx) | Reference transcript + rules | Reference transcript + Claude |
+| --- | --- | --- | --- |
+| Correct doc type | 25% | 100% | 100% |
+| Required-field F1 | 0.00 | 0.00 | 1.00 |
+| Leakage (card + phone read aloud) | 0 | 0 | 0 |
+| Facts auto-accepted from bad transcripts | 0 | n/a | n/a |
+
+Read honestly: pocketsphinx is the only recognizer this build sandbox could install (model hosts
+were blocked), and it can't follow synthetic voices. What it proves is the safety behaviour: bad
+transcripts are flagged and nothing from them is trusted. The reference column replays the exact
+scripts, standing in for whisper.cpp or Transcribe, to test everything after recognition. To
+measure real recognition, run `UIF_TRANSCRIBER=whisper make eval-audio`-style runs on your Mac
+(`brew install whisper-cpp`, set `UIF_WHISPER_MODEL`) or with Transcribe in AWS dev.
 
 ## Dispute rebuttal packets
 
