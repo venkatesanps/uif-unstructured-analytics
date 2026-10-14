@@ -16,10 +16,15 @@ from uif.providers.local import RegexGuard
 from uif.registry import DocType
 
 
-def _client(service: str, region: str | None = None):
+def _client(service: str, region: str | None = None, retries: int | None = None):
     import boto3
 
-    return boto3.client(service, region_name=region) if region else boto3.client(service)
+    kw = {"region_name": region} if region else {}
+    if retries:  # adaptive client-side rate limiting: batch answering hits Bedrock throttles
+        from botocore.config import Config
+
+        kw["config"] = Config(retries={"max_attempts": retries, "mode": "adaptive"}, read_timeout=300)
+    return boto3.client(service, **kw)
 
 
 class S3Store:
@@ -155,15 +160,20 @@ class BedrockLLM:
         if not model_id:
             raise ValueError("UIF_BEDROCK_MODEL_ID is not set")
         self.model_id, self.max_tokens, self.tool_choice = model_id, max_tokens, tool_choice
-        self.brt = client or _client("bedrock-runtime", region)
+        self.brt = client or _client("bedrock-runtime", region, retries=8)
 
-    def _tool_call(self, prompt: str, tool_name: str, schema: dict) -> tuple[dict, LLMUsage]:
+    def call_raw(self, system: str, prompt: str, tool_name: str, schema: dict) -> tuple[dict, LLMUsage]:
+        """Answer a prompt verbatim (used to replay handoff requests for parity checks)."""
+        return self._tool_call(prompt, tool_name, schema, system=system)
+
+    def _tool_call(self, prompt: str, tool_name: str, schema: dict, system: str = SYSTEM_PROMPT
+                   ) -> tuple[dict, LLMUsage]:
         t0 = time.perf_counter()
         # Newest Claude models reject a forced tool; default to auto + instruction + text fallback.
         choice = {"tool": {"name": tool_name}} if self.tool_choice == "tool" else {"auto": {}}
         resp = self.brt.converse(
             modelId=self.model_id,
-            system=[{"text": SYSTEM_PROMPT + CALL_TOOL.format(tool=tool_name)}],
+            system=[{"text": system + CALL_TOOL.format(tool=tool_name)}],
             messages=[{"role": "user", "content": [{"text": prompt}]}],
             inferenceConfig={"maxTokens": self.max_tokens},
             toolConfig={"tools": [{"toolSpec": {"name": tool_name, "description": "Record the result.",

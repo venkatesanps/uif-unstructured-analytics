@@ -63,3 +63,31 @@ def test_handler_runs_the_whole_pipeline_from_an_s3_event(aws_ctx, golden_dir):
 
     again = aws_handler.handler(event)
     assert again["duplicate"]
+
+
+def test_parity_task_command_from_the_runbook(aws_ctx, golden_dir, tmp_path, monkeypatch):
+    """Runs the exact ECS command in PARITY.md (aws runtime, store: paths on S3) with a stub Bedrock."""
+    import io
+    import zipfile
+
+    from tests.contract.test_parity import _FakeBedrock, _pending_request
+    from tests.conftest import make_ctx
+    from uif import cli
+    from uif.providers.aws import BedrockLLM
+    from uif.providers.handoff import export_bundle
+
+    laptop = make_ctx(tmp_path / "laptop")
+    _pending_request(laptop, golden_dir, "internal/note_00.txt")
+    _pending_request(laptop, golden_dir, "dispute/rebuttal_03.eml")  # names a customer: must not be refused
+    boto3.client("s3").put_object(Bucket=BUCKET, Key="uif/handoff/inbox/golden-requests.zip",
+                                  Body=export_bundle(laptop.store, "requests"))
+    monkeypatch.setattr("uif.providers.build_llm", lambda cfg, kind, store=None: BedrockLLM("m", client=_FakeBedrock()))
+
+    code = cli.main(["--runtime", "aws", "handoff", "answer", "--with", "bedrock",
+                     "--bundle", "store:handoff/inbox/golden-requests.zip",
+                     "--out", "store:handoff/outbox/bedrock-answers.zip"])
+    assert code == 0
+    out = boto3.client("s3").get_object(Bucket=BUCKET, Key="uif/handoff/outbox/bedrock-answers.zip")["Body"].read()
+    with zipfile.ZipFile(io.BytesIO(out)) as z:
+        answers = [n for n in z.namelist() if n.startswith("responses/")]
+    assert len(answers) == 2

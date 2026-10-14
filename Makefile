@@ -5,7 +5,7 @@ LLM     ?= rules
 export UIF_HOME := $(CURDIR)
 export PYTHONPATH := $(CURDIR)/src
 
-.PHONY: setup synth run eval eval-replay test ci review clean up down
+.PHONY: setup synth run eval eval-replay parity test ci review clean up down
 
 setup:
 	$(PY) -m venv $(VENV)
@@ -44,5 +44,9 @@ clean:
 # Replay the saved agent answers for the golden set (no agent needed): proves the handoff path end to end.
 eval-replay:
 	mkdir -p .uif/replay/store/handoff/responses
-	cp evals/handoff-golden/*.json .uif/replay/store/handoff/responses/
+	cp evals/golden/answers/claude-code/*.json .uif/replay/store/handoff/responses/
 	UIF_STORE=.uif/replay/store UIF_DUCKDB=.uif/replay/uif.duckdb $(BIN)/uif eval synthetic --llm handoff
+
+# Agent vs Bedrock on the same golden requests (answers/bedrock comes back from AWS dev; see PARITY.md).
+parity:
+	$(BIN)/uif parity diff --labels synthetic --names claude-code,bedrock --report evals/parity-report.md --json evals/parity-report.json

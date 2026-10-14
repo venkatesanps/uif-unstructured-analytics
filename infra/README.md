@@ -20,6 +20,7 @@ IAM sketch
 - guard role: read `restricted/`, write `guarded/`, Comprehend. **No Bedrock.**
 - extract role: read `guarded/`, `classification/`; write `extraction/`; `bedrock:InvokeModel` on the approved model only. **No access to `raw/` or `restricted/`.**
 - publish role: read pipeline prefixes except `raw/` and `restricted/`; write `publish/`.
+- parity task (dev only): read/write `handoff/`; `bedrock:InvokeModel` on the approved model. No other prefixes.
 
 Smoke test after deploy: upload `synthetic/<group>/*` to `landing/<group>/golden/` and compare the
 published NDJSON with the local `make eval` run (the `aws-deploy-check` skill does this).

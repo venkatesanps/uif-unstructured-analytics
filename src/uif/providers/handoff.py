@@ -13,7 +13,11 @@ must never open raw/, restricted/, the source files or golden labels."""
 from __future__ import annotations
 
 import hashlib
+import io
 import json
+import re
+import time
+import zipfile
 from typing import Any
 
 from uif.contracts import Page, utcnow
@@ -135,3 +139,107 @@ def purge_unsafe(store, guard) -> list[str]:
             store.delete(f"{RESP}/{rid}.json")
             removed.append(rid)
     return removed
+
+
+# ----------------------------------------------------------------------------- batch answering
+
+_PAGE = re.compile(r"^\[page (\d+)\]\n", re.M)
+
+
+def pages_from_prompt(user_prompt: str) -> list[Page]:
+    """Recover the tokenized pages from a request's <document> block."""
+    start, end = user_prompt.find("<document>"), user_prompt.rfind("</document>")
+    body = user_prompt[start + len("<document>"):end] if start != -1 else user_prompt
+    marks = list(_PAGE.finditer(body))
+    return [Page(page=int(m.group(1)), text=body[m.end():(marks[i + 1].start() if i + 1 < len(marks) else len(body))].strip())
+            for i, m in enumerate(marks)]
+
+
+_CLASSIFY_SCHEMA = {"type": "object", "properties": {"doc_type": {"type": "string"}, "confidence": {"type": "number"}},
+                    "required": ["doc_type", "confidence"]}
+
+
+def answer_request(req: dict[str, Any], provider, registry) -> dict[str, Any]:
+    """Answer one handoff request with a provider, using the request's own prompts and schema so every
+    answerer (agent, Bedrock, Claude API, rules) is judged on identical input."""
+    t0 = time.perf_counter()
+    usage = None
+    if req["kind"] == "extract":
+        if hasattr(provider, "call_raw"):
+            raw, usage = provider.call_raw(req["system_prompt"], req["user_prompt"], "record_extraction",
+                                           req["response_schema"])
+            fields = {}
+            for name in req["response_schema"]["properties"]:
+                item = raw.get(name) if isinstance(raw, dict) else None
+                item = item if isinstance(item, dict) else {"value": item}
+                fields[name] = {"value": item.get("value"), "page": item.get("page"), "quote": item.get("quote"),
+                                "confidence": float(item.get("confidence") or 0.0)}
+        else:
+            fields = provider.extract(pages_from_prompt(req["user_prompt"]), registry.get(req["doc_type"])).fields
+        out = {"fields": fields}
+    else:
+        if hasattr(provider, "call_raw"):
+            raw, usage = provider.call_raw(req["system_prompt"], req["user_prompt"], "record_classification",
+                                           _CLASSIFY_SCHEMA)
+            out = {"doc_type": raw.get("doc_type", "unknown"), "confidence": float(raw.get("confidence") or 0)}
+        else:
+            c = provider.classify(pages_from_prompt(req["user_prompt"]), [registry.get(n) for n in registry.names()])
+            out = {"doc_type": c.doc_type, "confidence": c.confidence}
+    return {"request_id": req["request_id"], "agent": getattr(usage, "model_id", None) or provider.model_id,
+            "tokens_in": getattr(usage, "tokens_in", 0), "tokens_out": getattr(usage, "tokens_out", 0),
+            "latency_ms": int((time.perf_counter() - t0) * 1000), "answered_ts": utcnow(), **out}
+
+
+def answer_pending(store, provider, registry, label: str, overwrite: bool = False,
+                   limit: int | None = None) -> dict[str, Any]:
+    s = status(store)
+    todo = (s["pending"] + s["answered"]) if overwrite else s["pending"]
+    done, failed = [], {}
+    for rid in sorted(todo)[:limit]:
+        req = json.loads(store.get_bytes(f"{REQ}/{rid}.json"))
+        try:
+            resp = answer_request(req, provider, registry)
+        except Exception as exc:  # keep going; report every failure at the end
+            failed[rid] = f"{type(exc).__name__}: {exc}"[:300]
+            continue
+        resp["agent"] = f"{label}:{resp['agent']}"
+        store.put_bytes(f"{RESP}/{rid}.json", json.dumps(resp, indent=1).encode())
+        done.append(rid)
+    return {"answered": len(done), "failed": failed, "remaining": len(status(store)["pending"])}
+
+
+# ----------------------------------------------------------------------------- bundles
+
+def export_bundle(store, what: str) -> bytes:
+    """Zip requests or responses (tokenized text only) to carry between laptop and AWS dev."""
+    prefix = REQ if what == "requests" else RESP
+    keys = sorted(k for k in store.list(prefix) if k.endswith(".json"))
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("manifest.json", json.dumps({"kind": what, "created_ts": utcnow(), "count": len(keys)}))
+        for k in keys:
+            z.writestr(f"{what}/{k.rsplit('/', 1)[-1]}", store.get_bytes(k))
+    return buf.getvalue()
+
+
+def import_bundle(store, data: bytes, guard=None) -> dict[str, Any]:
+    """Load a bundle into the store. With a guard, any file the guard would still change is refused:
+    bundles must arrive already tokenized."""
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        manifest = json.loads(z.read("manifest.json"))
+        what = manifest["kind"]
+        prefix = REQ if what == "requests" else RESP
+        loaded, refused = 0, []
+        for name in z.namelist():
+            if not name.startswith(f"{what}/") or not name.endswith(".json"):
+                continue
+            body = z.read(name)
+            if guard is not None:
+                text = json.loads(body).get("user_prompt", "") if what == "requests" else body.decode()
+                _, findings = guard.scan([Page(page=1, text=text)])
+                if findings:
+                    refused.append(name)
+                    continue
+            store.put_bytes(f"{prefix}/{name.split('/', 1)[1]}", body)
+            loaded += 1
+    return {"kind": what, "loaded": loaded, "refused": refused}

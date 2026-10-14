@@ -1,5 +1,6 @@
 # Laptop runtime. Synthetic or fully redacted documents only.
 runtime: local
+region: ${AWS_REGION:-us-east-1}
 
 store:
   kind: local
@@ -27,6 +28,10 @@ llm:
     auth: ${ANTHROPIC_AUTH:-x-api-key}        # x-api-key | bearer (many gateways)
     tool_choice: auto                         # 'tool' only for older models that accept forcing
     max_tokens: 4096
+  bedrock:                                  # only if this laptop has AWS credentials with Bedrock access
+    model_id: ${UIF_BEDROCK_MODEL_ID:-}
+    max_tokens: 4096
+    tool_choice: auto
   ollama:
     host: ${OLLAMA_HOST:-http://localhost:11434}
     model: ${OLLAMA_MODEL:-hermes3:latest}

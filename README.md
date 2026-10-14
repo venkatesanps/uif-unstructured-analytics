@@ -19,7 +19,7 @@ make setup             # venv + deps   (optional: brew install tesseract  -> sca
 make synth             # 19 labeled synthetic docs + data/merchant_master.csv + outcomes
 make run               # process them with the offline rules baseline
 make -s eval           # golden metrics + gates, JSON to stdout
-make test              # 44 tests: unit, contract, golden, adversarial, integration, aws (moto)
+make test              # 49 tests: unit, contract, golden, adversarial, integration, aws (moto)
 .venv/bin/uif sql "select * from mart_underwriting_variance"
 .venv/bin/uif sql "select * from mart_evidence_gaps"
 .venv/bin/uif review   # open review queue      (make review -> Streamlit reviewer UI)
@@ -74,6 +74,17 @@ answers were written by Claude in the same session that wrote the synthetic gene
 documents are clean. Claude recovered the two layouts the rules baseline can't read: the unseen
 statement and the freeform rebuttal email. The real number comes from your agent at work on
 redacted real samples.
+
+## Local agent vs Bedrock (parity)
+
+Locally you extract with Claude Code or Copilot; production uses Bedrock. `PARITY.md` is the runbook.
+Bedrock answers the exact requests your agent answered (same tokenized text, prompts and schema), and
+`uif parity diff --labels synthetic` reports field-by-field agreement plus each side's score against
+the golden labels. That report is the Gate C evidence that laptop results predict production.
+
+The tooling was checked end to end here with the rules baseline standing in for Bedrock (answer,
+export, unpack, diff, score). It correctly failed parity (90.5% required-field agreement) on the
+two layouts rules can't read.
 
 Read these honestly: the rules baseline's hints were written for the synthetic layouts, so
 those score perfectly. The point is the plumbing and the safety behaviour: the unseen statement

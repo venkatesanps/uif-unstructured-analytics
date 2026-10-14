@@ -37,9 +37,15 @@ make synth          # regenerate synthetic/ and data/merchant_master.csv
 make run            # process synthetic/ locally with the rules baseline
 make eval           # golden metrics + gates (LLM=handoff | anthropic | ollama for model-backed)
 make eval-replay    # replay saved agent answers (CI)
+make parity         # agent vs Bedrock answers on the same requests (see PARITY.md)
 make test           # full suite (Ollama tests skip if no server)
 make ci             # what the pipeline runs
 ```
+
+## Golden answers
+`evals/golden/requests` and `evals/golden/answers/<answerer>` are tied by request ID. After changing
+the generator, guard, a schema or a prompt, regenerate requests and re-answer on every side
+(`PARITY.md`). Never edit an answer file by hand to make a test pass.
 
 ## When adding a document type
 Use the `new-doc-type` skill. It scaffolds schema, prompt, synthetic generator and golden tests,

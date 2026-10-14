@@ -66,11 +66,15 @@ class AnthropicLLM:
         auth = {"Authorization": f"Bearer {key}"} if self.auth == "bearer" else {"x-api-key": key}
         return {"content-type": "application/json", "anthropic-version": self.version, **auth, **self.extra_headers}
 
-    def _call(self, prompt: str, tool: str, schema: dict) -> tuple[dict, LLMUsage]:
+    def call_raw(self, system: str, prompt: str, tool: str, schema: dict) -> tuple[dict, LLMUsage]:
+        """Answer a prompt verbatim (used to replay handoff requests for parity checks)."""
+        return self._call(prompt, tool, schema, system=system)
+
+    def _call(self, prompt: str, tool: str, schema: dict, system: str = SYSTEM_PROMPT) -> tuple[dict, LLMUsage]:
         body = {
             "model": self.model_id,
             "max_tokens": self.max_tokens,
-            "system": SYSTEM_PROMPT + CALL_TOOL.format(tool=tool),
+            "system": system + CALL_TOOL.format(tool=tool),
             "messages": [{"role": "user", "content": prompt}],
             "tools": [{"name": tool, "description": "Record the result.", "input_schema": schema}],
             "tool_choice": {"type": "tool", "name": tool} if self.tool_choice == "tool" else {"type": "auto"},
