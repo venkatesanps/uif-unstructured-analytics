@@ -21,6 +21,10 @@ class DocRun:
     def ok(self) -> bool:
         return all(r.ok for r in self.results)
 
+    @property
+    def pending(self) -> bool:
+        return bool(self.results) and self.results[-1].pending
+
 
 def process_bytes(ctx: Context, data: bytes, file_name: str, source_group: str, source_system: str,
                   submitter: str | None = None, force: bool = False) -> DocRun:

@@ -1,0 +1,69 @@
+{
+ "request_id": "8a1774dd63a34892",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "processor_name": {
+   "value": "Northwind Payments",
+   "page": 1,
+   "quote": "Processor: Northwind Payments",
+   "confidence": 0.97
+  },
+  "merchant_legal_name": {
+   "value": "Lone Star Auto Detailing LLC",
+   "page": 1,
+   "quote": "Merchant Name: Lone Star Auto Detailing LLC",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800056789012",
+   "page": 1,
+   "quote": "Merchant ID (MID): 800056789012",
+   "confidence": 0.97
+  },
+  "statement_period": {
+   "value": {
+    "start": "2026-05-01",
+    "end": "2026-05-31"
+   },
+   "page": 1,
+   "quote": "Statement Period: 05/01/2026 to 05/31/2026",
+   "confidence": 0.96
+  },
+  "gross_volume": {
+   "value": 1758208.99,
+   "page": 1,
+   "quote": "Total Gross Sales: $1,758,208.99",
+   "confidence": 0.97
+  },
+  "transaction_count": {
+   "value": 71429,
+   "page": 1,
+   "quote": "Total Transactions: 71,429",
+   "confidence": 0.96
+  },
+  "refund_volume": {
+   "value": 26612.82,
+   "page": 1,
+   "quote": "Refunds: $26,612.82",
+   "confidence": 0.95
+  },
+  "chargeback_count": {
+   "value": 929,
+   "page": 1,
+   "quote": "Chargebacks: 929",
+   "confidence": 0.95
+  },
+  "chargeback_volume": {
+   "value": 22867.09,
+   "page": 1,
+   "quote": "Chargeback Amount: $22,867.09",
+   "confidence": 0.95
+  },
+  "total_fees": {
+   "value": 45730.64,
+   "page": 1,
+   "quote": "Total Fees: $45,730.64",
+   "confidence": 0.96
+  }
+ }
+}

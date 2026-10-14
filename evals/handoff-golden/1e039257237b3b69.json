@@ -1,0 +1,52 @@
+{
+ "request_id": "1e039257237b3b69",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-9074",
+   "page": 1,
+   "quote": "Case: RC-2026-9074",
+   "confidence": 0.98
+  },
+  "merchant_name": {
+   "value": "Sunset Vitamin Co",
+   "page": 1,
+   "quote": "Merchant: Sunset Vitamin Co",
+   "confidence": 0.97
+  },
+  "analyst": {
+   "value": "J. Ortiz",
+   "page": 1,
+   "quote": "Analyst: J. Ortiz",
+   "confidence": 0.96
+  },
+  "review_date": {
+   "value": "2026-09-05",
+   "page": 1,
+   "quote": "Review date: 2026-09-05",
+   "confidence": 0.97
+  },
+  "risk_themes": {
+   "value": [
+    "adverse media",
+    "business model change",
+    "chargeback spike"
+   ],
+   "page": 1,
+   "quote": "A local news report describes customer complaints about unfulfilled orders.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "monitor",
+   "page": 1,
+   "quote": "Recommendation: monitor",
+   "confidence": 0.97
+  },
+  "exposure_estimate": {
+   "value": 227900.0,
+   "page": 1,
+   "quote": "Exposure estimate: $227,900.00",
+   "confidence": 0.96
+  }
+ }
+}

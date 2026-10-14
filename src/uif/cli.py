@@ -7,6 +7,11 @@
   uif review                                 show the open review queue
   uif sql    "select * from mart_underwriting_variance"
   uif step   extract --doc-id <id>           run one step (what ECS tasks call)
+  uif handoff status|check                   agent-handoff requests waiting / response sanity
+  uif reguard                                after a guard change: re-guard stored docs, purge stale requests
+
+--llm picks the extractor: rules (offline baseline), handoff (Claude Code / Copilot agent fills
+requests; see AGENT_EXTRACT.md), anthropic (Claude Messages API or your gateway), ollama, bedrock.
 """
 
 from __future__ import annotations
@@ -15,6 +20,8 @@ import argparse
 import json
 import os
 import sys
+
+LLM_KINDS = ["rules", "handoff", "anthropic", "ollama", "bedrock"]
 
 
 def _ctx(args) -> "Context":  # noqa: F821
@@ -31,17 +38,37 @@ def cmd_run(args) -> int:
 
     ctx = _ctx(args)
     runs = process_path(ctx, args.path, args.source, args.system, args.submitter, args.force)
-    bad = 0
+    bad = waiting = 0
     for r in runs:
         last = r.results[-1]
-        flag = "ok " if r.ok else "ERR"
+        flag = "WAIT" if r.pending else ("ok  " if r.ok else "ERR ")
         bad += not r.ok
+        waiting += r.pending
         print(f"{flag} {r.doc_id}  {r.file_name:<40} {last.step:<9} {last.detail or ''}")
         if args.verbose:
             for s in r.results:
                 print(f"      {s.step:<9} ok={s.ok} {s.detail or ''}")
-    print(f"\n{len(runs)} document(s), {bad} with errors")
+    print(f"\n{len(runs)} document(s), {bad} with errors, {waiting} waiting for an agent")
+    if waiting:
+        print("Next: have your agent follow AGENT_EXTRACT.md, then rerun this command with --force.")
     return 1 if bad else 0
+
+
+def cmd_handoff(args) -> int:
+    from uif.providers.handoff import check, status
+
+    store = _ctx(args).store
+    if args.action == "status":
+        s = status(store)
+        print(json.dumps({k: len(v) for k, v in s.items()}))
+        for rid in s["pending"]:
+            print(f"pending  {store.uri(f'handoff/requests/{rid}.json')}")
+        return 0
+    problems = check(store)
+    for p in problems:
+        print(f"PROBLEM {p}")
+    print("responses look well-formed" if not problems else f"{len(problems)} problem(s)")
+    return 1 if problems else 0
 
 
 def cmd_step(args) -> int:
@@ -86,6 +113,29 @@ def cmd_review(args) -> int:
     return 0
 
 
+def cmd_reguard(args) -> int:
+    """Re-run the guard over every stored document and purge handoff files it would now change.
+    Run this after any change to guard patterns, then rerun the pipeline with --force."""
+    from uif.providers.handoff import purge_unsafe
+    from uif.steps import guard
+
+    ctx = _ctx(args)
+    doc_ids = [k.split("/")[-1][:-5] for k in ctx.store.list("envelope/") if k.endswith(".json")]
+    changed = 0
+    for doc_id in doc_ids:
+        if not ctx.store.exists(ctx.key("normalized", doc_id=doc_id)):
+            continue
+        before = ctx.store.get_bytes(ctx.key("guarded", doc_id=doc_id)) if ctx.store.exists(
+            ctx.key("guarded", doc_id=doc_id)) else b""
+        guard.run(ctx, doc_id)
+        changed += ctx.store.get_bytes(ctx.key("guarded", doc_id=doc_id)) != before
+    purged = purge_unsafe(ctx.store, ctx.providers.guard)
+    print(f"re-guarded {len(doc_ids)} document(s), {changed} changed; purged {len(purged)} handoff request(s)")
+    if changed or purged:
+        print("Next: rerun the pipeline with --force so extraction and publish use the re-guarded text.")
+    return 0
+
+
 def cmd_sql(args) -> int:
     ctx = _ctx(args)
     con = ctx.providers.warehouse.con
@@ -107,7 +157,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--source", required=True, choices=["merchant", "external", "internal"])
     r.add_argument("--system", default="manual")
     r.add_argument("--submitter")
-    r.add_argument("--llm", choices=["rules", "ollama", "bedrock"])
+    r.add_argument("--llm", choices=LLM_KINDS)
     r.add_argument("--force", action="store_true", help="reprocess duplicates")
     r.add_argument("-v", "--verbose", action="store_true")
     r.set_defaults(fn=cmd_run)
@@ -115,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("step", help="run one step for one document")
     s.add_argument("name")
     s.add_argument("--doc-id")
-    s.add_argument("--llm", choices=["rules", "ollama", "bedrock"])
+    s.add_argument("--llm", choices=LLM_KINDS)
     s.set_defaults(fn=cmd_step)
 
     g = sub.add_parser("synth", help="generate labeled synthetic documents")
@@ -126,13 +176,20 @@ def main(argv: list[str] | None = None) -> int:
 
     e = sub.add_parser("eval", help="score against golden labels")
     e.add_argument("path", nargs="?", default="synthetic")
-    e.add_argument("--llm", choices=["rules", "ollama", "bedrock"])
+    e.add_argument("--llm", choices=LLM_KINDS)
     e.add_argument("--no-run", action="store_true", help="score what is already processed")
     e.set_defaults(fn=cmd_eval)
 
     v = sub.add_parser("review", help="open review queue")
     v.add_argument("--limit", type=int, default=50)
     v.set_defaults(fn=cmd_review)
+
+    h = sub.add_parser("handoff", help="agent handoff: status of requests, or check responses")
+    h.add_argument("action", choices=["status", "check"])
+    h.set_defaults(fn=cmd_handoff)
+
+    rg = sub.add_parser("reguard", help="re-run the guard over stored docs after a guard change")
+    rg.set_defaults(fn=cmd_reguard)
 
     q = sub.add_parser("sql", help="query the local warehouse")
     q.add_argument("query")

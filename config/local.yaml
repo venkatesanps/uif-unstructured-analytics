@@ -13,7 +13,20 @@ guard:
   token_salt: ${UIF_TOKEN_SALT:-local-dev-salt}
 
 llm:
-  kind: ${UIF_LLM:-rules}   # rules = offline deterministic baseline; ollama = local model
+  # rules     offline deterministic baseline (no model)
+  # handoff   your coding agent (Claude Code, Copilot agent mode) fills requests; see AGENT_EXTRACT.md
+  # anthropic Claude Messages API, direct or via a gateway that exposes it
+  # ollama    local model server
+  kind: ${UIF_LLM:-rules}
+  handoff:
+    agent: ${UIF_AGENT_NAME:-claude-code}     # recorded on every fact's extractor_run
+  anthropic:
+    model: ${ANTHROPIC_MODEL:-claude-sonnet-5-5}
+    base_url: ${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
+    api_key_env: ${ANTHROPIC_KEY_ENV:-ANTHROPIC_API_KEY}
+    auth: ${ANTHROPIC_AUTH:-x-api-key}        # x-api-key | bearer (many gateways)
+    tool_choice: auto                         # 'tool' only for older models that accept forcing
+    max_tokens: 4096
   ollama:
     host: ${OLLAMA_HOST:-http://localhost:11434}
     model: ${OLLAMA_MODEL:-hermes3:latest}

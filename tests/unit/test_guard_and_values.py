@@ -66,3 +66,12 @@ def test_resolver_mid_first_then_fuzzy_name():
     row, method, _ = resolve(master, None, ["BLUE HARBOR COFFEE, L.L.C."])
     assert row["merchant_id"] == "M1" and method == "name_fuzzy"
     assert resolve(master, None, ["Harbor Freight Tools"])[0] is None
+
+
+def test_ocr_split_email_is_tokenized_but_prices_are_not():
+    g = RegexGuard("salt")
+    out, f = g.scan([Page(page=1, text="write to disputes @ lakeside-example.com or disputes@lakeside-example .com")])
+    assert [x.kind for x in f] == ["email", "email"] and "@" not in out[0].text
+    assert f[0].token == f[1].token  # same address, same token, however OCR spaced it
+    _, f = g.scan([Page(page=1, text="qty 2 @ 5.00 each")])
+    assert f == []

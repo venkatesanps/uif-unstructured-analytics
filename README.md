@@ -19,31 +19,61 @@ make setup             # venv + deps   (optional: brew install tesseract  -> sca
 make synth             # 19 labeled synthetic docs + data/merchant_master.csv + outcomes
 make run               # process them with the offline rules baseline
 make -s eval           # golden metrics + gates, JSON to stdout
-make test              # 36 tests: unit, contract, golden, adversarial, integration, aws (moto)
+make test              # 44 tests: unit, contract, golden, adversarial, integration, aws (moto)
 .venv/bin/uif sql "select * from mart_underwriting_variance"
 .venv/bin/uif sql "select * from mart_evidence_gaps"
 .venv/bin/uif review   # open review queue      (make review -> Streamlit reviewer UI)
 ```
 
-With your local model:
+## Using Claude at work (no Ollama needed)
+
+Pick whichever your firm allows; all three feed the same validator, gates and marts.
+
+| Mode | `--llm` | Needs | How it runs |
+| --- | --- | --- | --- |
+| Agent handoff | `handoff` | Claude Code or Copilot agent mode | Pipeline writes tokenized requests; the agent answers them per `AGENT_EXTRACT.md`; rerun picks them up |
+| Claude API / gateway | `anthropic` | An endpoint that speaks the Messages API + a key or bearer token | Direct calls; set `ANTHROPIC_BASE_URL`, `ANTHROPIC_MODEL`, `ANTHROPIC_AUTH=bearer` for gateways |
+| Bedrock | `bedrock` | AWS account with Claude enabled | Used by the AWS runtime (`config/aws.yaml`) |
+
+Agent handoff, step by step:
 
 ```bash
-ollama pull hermes3:latest
-LLM=ollama make run && LLM=ollama make -s eval
-pytest -m ollama -s    # checks the model recovers the layout the rules baseline can't read
+LLM=handoff make run                      # documents park at extract: "waiting for an agent"
+# Claude Code:  "/agent-extract"  (skill in .claude/skills)   Copilot: run the agent-extract prompt
+.venv/bin/uif handoff check               # responses well-formed?
+.venv/bin/uif run synthetic/merchant --source merchant --llm handoff --force   # resume (each folder)
+.venv/bin/uif eval synthetic --llm handoff --no-run
 ```
 
-## What the golden run shows (rules baseline, 2026-10-13)
+The agent sees only guard-tokenized text, the same text a hosted model would see. Before putting
+**real** documents through any agent or gateway, confirm your firm's data-handling approval for that
+tool and data class. The design assumes synthetic or redacted data on laptops.
 
-| Metric | Value | Gate |
-| --- | --- | --- |
-| Classification accuracy | 1.00 | ≥ 0.95 |
-| Required-field F1 | 0.950 | ≥ 0.90 |
-| All-field F1 | 0.948 | reported |
-| Grounding rate | 1.00 | ≥ 0.99 |
-| PII/PAN leakage | 0 | = 0 |
-| Entity accuracy | 1.00 | reported |
-| Adversarial (injection) docs | pass | must pass |
+Both Claude adapters use `tool_choice: auto` plus a JSON-text fallback. The newest Claude models
+return 400 on a forced tool choice. Strict tool mode isn't used either: it caps nullable unions
+at 16 per request, and these schemas need more.
+
+## What the golden run shows (2026-10-13, 19 docs)
+
+| Metric | Rules baseline | Claude via handoff | Gate |
+| --- | --- | --- | --- |
+| Classification accuracy | 1.00 | 1.00 | ≥ 0.95 |
+| Required-field F1 | 0.950 | 1.00 | ≥ 0.90 |
+| All-field F1 | 0.948 | 1.00 | reported |
+| Grounding rate | 1.00 | 1.00 | ≥ 0.99 |
+| PII/PAN leakage | 0 | 0 | = 0 |
+| Entity accuracy | 0.947 | 1.00 | reported |
+| Facts sent to review | 0% | 0.6% (one sale date with no year printed) | reported |
+| Adversarial (injection) docs | pass | pass | must pass |
+
+Saved in `evals/baseline-*.json`; `make eval-replay` replays the saved agent answers
+(`evals/handoff-golden/`) so CI checks the handoff path without an agent.
+
+The handoff column is a format and plumbing baseline, **not an independent accuracy number**: the
+answers were written by Claude in the same session that wrote the synthetic generator, and the
+documents are clean. Claude recovered the two layouts the rules baseline can't read: the unseen
+statement and the freeform rebuttal email. The real number comes from your agent at work on
+redacted real samples.
 
 Read these honestly: the rules baseline's hints were written for the synthetic layouts, so
 those score perfectly. The point is the plumbing and the safety behaviour: the unseen statement

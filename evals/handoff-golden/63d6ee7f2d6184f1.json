@@ -1,0 +1,71 @@
+{
+ "request_id": "63d6ee7f2d6184f1",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-165271",
+   "page": 1,
+   "quote": "Case Number: CB-2026-165271",
+   "confidence": 0.98
+  },
+  "merchant_legal_name": {
+   "value": "Sunset Vitamin Co",
+   "page": 1,
+   "quote": "Merchant: Sunset Vitamin Co",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800045678901",
+   "page": 1,
+   "quote": "MID: 800045678901",
+   "confidence": 0.97
+  },
+  "card_network": {
+   "value": "visa",
+   "page": 1,
+   "quote": "Card Network: Visa",
+   "confidence": 0.97
+  },
+  "reason_code": {
+   "value": "13.3",
+   "page": 1,
+   "quote": "Reason Code: 13.3 (Not as Described or Defective Merchandise)",
+   "confidence": 0.97
+  },
+  "dispute_amount": {
+   "value": 1773.09,
+   "page": 1,
+   "quote": "Disputed Amount: $1,773.09",
+   "confidence": 0.97
+  },
+  "transaction_date": {
+   "value": "2026-08-03",
+   "page": 1,
+   "quote": "Transaction Date: 2026-08-03",
+   "confidence": 0.96
+  },
+  "order_number": {
+   "value": "ORD-34983",
+   "page": 1,
+   "quote": "Order Number: ORD-34983",
+   "confidence": 0.96
+  },
+  "evidence_types": {
+   "value": [
+    "invoice/receipt",
+    "proof of delivery",
+    "customer communication",
+    "refund policy"
+   ],
+   "page": 1,
+   "quote": "Copy of the invoice for the order",
+   "confidence": 0.9
+  },
+  "rebuttal_basis": {
+   "value": "as_described",
+   "page": 1,
+   "quote": "Our position: the merchandise matched the description on our website at the time of sale.",
+   "confidence": 0.93
+  }
+ }
+}

@@ -1,0 +1,69 @@
+{
+ "request_id": "94b02eddf90036a4",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "processor_name": {
+   "value": "Northwind Payments",
+   "page": 1,
+   "quote": "Processor: Northwind Payments",
+   "confidence": 0.97
+  },
+  "merchant_legal_name": {
+   "value": "Pinecrest Dental Group PLLC",
+   "page": 1,
+   "quote": "Merchant Name: Pinecrest Dental Group PLLC",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800034567890",
+   "page": 1,
+   "quote": "Merchant ID (MID): 800034567890",
+   "confidence": 0.97
+  },
+  "statement_period": {
+   "value": {
+    "start": "2026-03-01",
+    "end": "2026-03-31"
+   },
+   "page": 1,
+   "quote": "Statement Period: 03/01/2026 to 03/31/2026",
+   "confidence": 0.96
+  },
+  "gross_volume": {
+   "value": 162945.55,
+   "page": 1,
+   "quote": "Total Gross Sales: $162,945.55",
+   "confidence": 0.97
+  },
+  "transaction_count": {
+   "value": 5276,
+   "page": 1,
+   "quote": "Total Transactions: 5,276",
+   "confidence": 0.96
+  },
+  "refund_volume": {
+   "value": 5530.34,
+   "page": 1,
+   "quote": "Refunds: $5,530.34",
+   "confidence": 0.95
+  },
+  "chargeback_count": {
+   "value": 36,
+   "page": 1,
+   "quote": "Chargebacks: 36",
+   "confidence": 0.95
+  },
+  "chargeback_volume": {
+   "value": 1111.72,
+   "page": 1,
+   "quote": "Chargeback Amount: $1,111.72",
+   "confidence": 0.95
+  },
+  "total_fees": {
+   "value": 4214.85,
+   "page": 1,
+   "quote": "Total Fees: $4,214.85",
+   "confidence": 0.96
+  }
+ }
+}

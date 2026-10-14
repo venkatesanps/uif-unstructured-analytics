@@ -6,6 +6,7 @@ import uuid
 
 from uif.context import Context
 from uif.contracts import Classification, Extraction, ExtractorRun, FieldValue, GuardedDoc, StepResult
+from uif.providers.handoff import HandoffPending
 
 
 def run(ctx: Context, doc_id: str) -> StepResult:
@@ -20,7 +21,11 @@ def run(ctx: Context, doc_id: str) -> StepResult:
         return StepResult(doc_id=doc_id, step="extract", ok=True, output_key=key, detail="skipped: unknown type")
     doc_type = ctx.registry.get(cls.doc_type)
     doc = ctx.get_model("guarded", GuardedDoc, doc_id=doc_id)
-    out = llm.extract(doc.pages, doc_type)
+    try:
+        out = llm.extract(doc.pages, doc_type)
+    except HandoffPending as wait:
+        return StepResult(doc_id=doc_id, step="extract", ok=True, halt=True, pending=True,
+                          output_key=wait.key, detail=f"waiting for agent: {wait.request_id}")
     ext = Extraction(
         doc_id=doc_id,
         doc_type=doc_type.name,

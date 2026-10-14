@@ -1,0 +1,69 @@
+{
+ "request_id": "c577ee3e782323d0",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "processor_name": {
+   "value": "Lakeside Merchant Services",
+   "page": 1,
+   "quote": "Issued by: Lakeside Merchant Services",
+   "confidence": 0.97
+  },
+  "merchant_legal_name": {
+   "value": "Sunset Vitamin Co",
+   "page": 1,
+   "quote": "Business Name: Sunset Vitamin Co",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800045678901",
+   "page": 1,
+   "quote": "Merchant Number: 800045678901",
+   "confidence": 0.96
+  },
+  "statement_period": {
+   "value": {
+    "start": "2026-04-01",
+    "end": "2026-04-30"
+   },
+   "page": 1,
+   "quote": "Billing Period: Apr 1, 2026 through Apr 30, 2026",
+   "confidence": 0.96
+  },
+  "gross_volume": {
+   "value": 432900.58,
+   "page": 1,
+   "quote": "Gross Sales $432,900.58",
+   "confidence": 0.96
+  },
+  "transaction_count": {
+   "value": 4042,
+   "page": 1,
+   "quote": "Number of Transactions: 4,042",
+   "confidence": 0.96
+  },
+  "refund_volume": {
+   "value": 10908.49,
+   "page": 1,
+   "quote": "Credits: ($10,908.49)",
+   "confidence": 0.93
+  },
+  "chargeback_count": {
+   "value": 57,
+   "page": 1,
+   "quote": "Disputes Received: 57",
+   "confidence": 0.93
+  },
+  "chargeback_volume": {
+   "value": 6104.44,
+   "page": 1,
+   "quote": "Dispute Amount: $6,104.44",
+   "confidence": 0.93
+  },
+  "total_fees": {
+   "value": 12024.58,
+   "page": 1,
+   "quote": "Total Processing Fees: $12,024.58",
+   "confidence": 0.96
+  }
+ }
+}

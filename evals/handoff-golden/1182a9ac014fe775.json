@@ -1,0 +1,50 @@
+{
+ "request_id": "1182a9ac014fe775",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_id": {
+   "value": "RC-2026-2590",
+   "page": 1,
+   "quote": "Case: RC-2026-2590",
+   "confidence": 0.98
+  },
+  "merchant_name": {
+   "value": "Copperleaf Travel Partners Inc",
+   "page": 1,
+   "quote": "Merchant: Copperleaf Travel Partners Inc",
+   "confidence": 0.97
+  },
+  "analyst": {
+   "value": "K. Nguyen",
+   "page": 1,
+   "quote": "Analyst: K. Nguyen",
+   "confidence": 0.96
+  },
+  "review_date": {
+   "value": "2026-10-02",
+   "page": 1,
+   "quote": "Review date: 2026-10-02",
+   "confidence": 0.97
+  },
+  "risk_themes": {
+   "value": [
+    "volume spike"
+   ],
+   "page": 1,
+   "quote": "Monthly processing volume increased about 3x against the underwriting estimate.",
+   "confidence": 0.85
+  },
+  "recommended_action": {
+   "value": "reduce_limit",
+   "page": 1,
+   "quote": "Recommendation: reduce_limit",
+   "confidence": 0.97
+  },
+  "exposure_estimate": {
+   "value": 171600.0,
+   "page": 1,
+   "quote": "Exposure estimate: $171,600.00",
+   "confidence": 0.96
+  }
+ }
+}

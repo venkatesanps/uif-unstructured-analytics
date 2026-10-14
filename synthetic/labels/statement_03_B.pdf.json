@@ -21,5 +21,7 @@
   "flags": [
     "scanned"
   ],
-  "raw_identifiers": []
+  "raw_identifiers": [
+    "disputes@lakeside-example.com"
+  ]
 }

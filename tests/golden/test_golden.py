@@ -25,8 +25,10 @@ def test_unknown_document_is_parked_for_the_schema_designer(processed):
     assert doc["doc_type"] == "unknown" and doc["review_tasks"] == ["unknown_doc_type"]
 
 
-def test_merchant_not_in_master_is_flagged(processed):
+def test_unresolved_merchants_are_flagged_not_guessed(processed):
     _, report = processed
-    assert report["entity_accuracy"] == 1.0
-    flagged = [d for d in report["documents_detail"] if "unresolved_merchant" in d.get("review_tasks", [])]
-    assert len(flagged) >= 2
+    # Rules baseline links every doc it can read; the freeform rebuttal names its merchant only in
+    # prose, so the baseline misses it and must flag it rather than guess.
+    assert report["entity_accuracy"] >= 0.9
+    flagged = {d["file"] for d in report["documents_detail"] if "unresolved_merchant" in d.get("review_tasks", [])}
+    assert "dispute/rebuttal_05.eml" in flagged and len(flagged) >= 3

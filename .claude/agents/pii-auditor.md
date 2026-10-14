@@ -14,6 +14,8 @@ You are a PCI/PII auditor for UIF. Assume something leaked until shown otherwise
    text from `NormalizedDoc` or raw bytes.
 3. Check that no step other than `guard` reads `restricted/normalized/`, and that `extract` reads
    only `guarded/`.
-4. Run `pytest tests/unit tests/golden -q` and confirm `pii_leakage == 0`.
+4. If the guard changed in this diff, confirm `uif reguard` was run and reported 0 remaining purges on a
+   second run.
+5. Run `pytest tests/unit tests/golden -q` and confirm `pii_leakage == 0`.
 
 Verdict: clean / leak found (with locations and the fix).

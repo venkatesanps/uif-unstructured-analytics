@@ -1,0 +1,70 @@
+{
+ "request_id": "18b6ed7d9d4d30f9",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-434088",
+   "page": 1,
+   "quote": "Case Number: CB-2026-434088",
+   "confidence": 0.98
+  },
+  "merchant_legal_name": {
+   "value": "Pinecrest Dental Group PLLC",
+   "page": 1,
+   "quote": "Merchant: Pinecrest Dental Group PLLC",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800034567890",
+   "page": 1,
+   "quote": "MID: 800034567890",
+   "confidence": 0.97
+  },
+  "card_network": {
+   "value": "mastercard",
+   "page": 1,
+   "quote": "Card Network: Mastercard",
+   "confidence": 0.97
+  },
+  "reason_code": {
+   "value": "4837",
+   "page": 1,
+   "quote": "Reason Code: 4837 (No Cardholder Authorization)",
+   "confidence": 0.97
+  },
+  "dispute_amount": {
+   "value": 1552.9,
+   "page": 1,
+   "quote": "Disputed Amount: $1,552.90",
+   "confidence": 0.97
+  },
+  "transaction_date": {
+   "value": "2026-08-23",
+   "page": 1,
+   "quote": "Transaction Date: 2026-08-23",
+   "confidence": 0.96
+  },
+  "order_number": {
+   "value": "ORD-26448",
+   "page": 1,
+   "quote": "Order Number: ORD-26448",
+   "confidence": 0.96
+  },
+  "evidence_types": {
+   "value": [
+    "avs/cvv match",
+    "ip/device match",
+    "prior undisputed purchases"
+   ],
+   "page": 2,
+   "quote": "AVS match: yes",
+   "confidence": 0.9
+  },
+  "rebuttal_basis": {
+   "value": "authorized",
+   "page": 1,
+   "quote": "Our position: the transaction was authorized by the cardholder, as the attached records show.",
+   "confidence": 0.93
+  }
+ }
+}

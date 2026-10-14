@@ -57,11 +57,21 @@ def build_providers(cfg: dict[str, Any]) -> Providers:
     elif lcfg["kind"] == "ollama":
         oc = lcfg["ollama"]
         llm = local.OllamaLLM(oc["host"], oc["model"], int(oc.get("timeout_s", 180)))
+    elif lcfg["kind"] == "handoff":
+        from uif.providers.handoff import HandoffLLM
+
+        llm = HandoffLLM(store, (lcfg.get("handoff") or {}).get("agent", "agent"))
+    elif lcfg["kind"] == "anthropic":
+        from uif.providers.anthropic_api import AnthropicLLM
+
+        a = dict(lcfg.get("anthropic") or {})
+        llm = AnthropicLLM(**{k: v for k, v in a.items() if v not in (None, "")})
     elif lcfg["kind"] == "bedrock":
         from uif.providers.aws import BedrockLLM
 
         bc = lcfg["bedrock"]
-        llm = BedrockLLM(bc["model_id"], cfg.get("region"), int(bc.get("max_tokens", 4096)))
+        llm = BedrockLLM(bc["model_id"], cfg.get("region"), int(bc.get("max_tokens", 4096)),
+                         tool_choice=bc.get("tool_choice", "auto"))
     else:
         raise ValueError(f"unknown llm kind {lcfg['kind']}")
 

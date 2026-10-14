@@ -1,0 +1,69 @@
+{
+ "request_id": "e2cfa11d382cd101",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "case_number": {
+   "value": "CB-2026-459279",
+   "page": 1,
+   "quote": "case number CB-2026-459279",
+   "confidence": 0.95
+  },
+  "merchant_legal_name": {
+   "value": "Maple & Main Bakery LLC",
+   "page": 1,
+   "quote": "for the Maple & Main Bakery LLC account",
+   "confidence": 0.88
+  },
+  "mid": {
+   "value": null,
+   "page": null,
+   "quote": null,
+   "confidence": 0.0
+  },
+  "card_network": {
+   "value": "visa",
+   "page": 1,
+   "quote": "on their Visa card",
+   "confidence": 0.85
+  },
+  "reason_code": {
+   "value": "13.2",
+   "page": 1,
+   "quote": "Your notice lists reason 13.2.",
+   "confidence": 0.9
+  },
+  "dispute_amount": {
+   "value": 1499.64,
+   "page": 1,
+   "quote": "The cardholder was billed $1,499.64 on Aug 16",
+   "confidence": 0.85
+  },
+  "transaction_date": {
+   "value": "2026-08-16",
+   "page": 1,
+   "quote": "The cardholder was billed $1,499.64 on Aug 16",
+   "confidence": 0.55
+  },
+  "order_number": {
+   "value": "ORD-44702",
+   "page": 1,
+   "quote": "We dispute this chargeback on order ORD-44702",
+   "confidence": 0.92
+  },
+  "evidence_types": {
+   "value": [
+    "customer communication",
+    "refund policy"
+   ],
+   "page": 1,
+   "quote": "the chat transcript and our refund policy are attached",
+   "confidence": 0.88
+  },
+  "rebuttal_basis": {
+   "value": "cancellation_not_received",
+   "page": 1,
+   "quote": "the cardholder never requested cancellation before renewal",
+   "confidence": 0.9
+  }
+ }
+}

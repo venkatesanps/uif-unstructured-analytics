@@ -2,7 +2,7 @@
   "file": "dispute/rebuttal_05.eml",
   "source_group": "merchant",
   "doc_type": "dispute_rebuttal",
-  "merchant_id": null,
+  "merchant_id": "M0007",
   "fields": {
     "case_number": "CB-2026-459279",
     "merchant_legal_name": "Maple & Main Bakery LLC",

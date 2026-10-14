@@ -1,0 +1,69 @@
+{
+ "request_id": "ea2cd3053ac05b27",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "processor_name": {
+   "value": "Lakeside Merchant Services",
+   "page": 1,
+   "quote": "Issued by: Lakeside Merchant Services",
+   "confidence": 0.97
+  },
+  "merchant_legal_name": {
+   "value": "Ridgeline Outdoor Supply Inc",
+   "page": 1,
+   "quote": "Business Name: Ridgeline Outdoor Supply Inc",
+   "confidence": 0.97
+  },
+  "mid": {
+   "value": "800023456789",
+   "page": 1,
+   "quote": "Merchant Number: 800023456789",
+   "confidence": 0.96
+  },
+  "statement_period": {
+   "value": {
+    "start": "2026-02-01",
+    "end": "2026-02-28"
+   },
+   "page": 1,
+   "quote": "Billing Period: Feb 1, 2026 through Feb 28, 2026",
+   "confidence": 0.96
+  },
+  "gross_volume": {
+   "value": 683612.49,
+   "page": 1,
+   "quote": "Gross Sales $683,612.49",
+   "confidence": 0.96
+  },
+  "transaction_count": {
+   "value": 26056,
+   "page": 1,
+   "quote": "Number of Transactions: 26,056",
+   "confidence": 0.96
+  },
+  "refund_volume": {
+   "value": 4315.2,
+   "page": 1,
+   "quote": "Credits: ($4,315.20)",
+   "confidence": 0.93
+  },
+  "chargeback_count": {
+   "value": 211,
+   "page": 1,
+   "quote": "Disputes Received: 211",
+   "confidence": 0.93
+  },
+  "chargeback_volume": {
+   "value": 5535.76,
+   "page": 1,
+   "quote": "Dispute Amount: $5,535.76",
+   "confidence": 0.93
+  },
+  "total_fees": {
+   "value": 19165.43,
+   "page": 1,
+   "quote": "Total Processing Fees: $19,165.43",
+   "confidence": 0.96
+  }
+ }
+}

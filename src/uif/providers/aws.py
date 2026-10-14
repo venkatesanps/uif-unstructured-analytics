@@ -11,6 +11,7 @@ from typing import Any
 from uif.contracts import GuardFinding, Page
 from uif.providers.base import ClassifyOutput, ExtractionOutput, LLMUsage
 from uif.providers.llm_common import SYSTEM_PROMPT, classify_prompt, coerce_fields, response_schema, user_prompt
+from uif.providers.anthropic_api import CALL_TOOL, pick_tool_input
 from uif.providers.local import RegexGuard
 from uif.registry import DocType
 
@@ -61,6 +62,9 @@ class S3Store:
 
     def uri(self, key: str) -> str:
         return f"s3://{self.bucket}/{self._k(key)}"
+
+    def delete(self, key: str) -> None:
+        self.s3.delete_object(Bucket=self.bucket, Key=self._k(key))
 
 
 class TextractOCR:
@@ -146,25 +150,30 @@ class ComprehendGuard(RegexGuard):
 
 
 class BedrockLLM:
-    def __init__(self, model_id: str, region: str | None = None, max_tokens: int = 4096, client=None):
+    def __init__(self, model_id: str, region: str | None = None, max_tokens: int = 4096, client=None,
+                 tool_choice: str = "auto"):
         if not model_id:
             raise ValueError("UIF_BEDROCK_MODEL_ID is not set")
-        self.model_id, self.max_tokens = model_id, max_tokens
+        self.model_id, self.max_tokens, self.tool_choice = model_id, max_tokens, tool_choice
         self.brt = client or _client("bedrock-runtime", region)
 
     def _tool_call(self, prompt: str, tool_name: str, schema: dict) -> tuple[dict, LLMUsage]:
         t0 = time.perf_counter()
+        # Newest Claude models reject a forced tool; default to auto + instruction + text fallback.
+        choice = {"tool": {"name": tool_name}} if self.tool_choice == "tool" else {"auto": {}}
         resp = self.brt.converse(
             modelId=self.model_id,
-            system=[{"text": SYSTEM_PROMPT}],
+            system=[{"text": SYSTEM_PROMPT + CALL_TOOL.format(tool=tool_name)}],
             messages=[{"role": "user", "content": [{"text": prompt}]}],
-            inferenceConfig={"maxTokens": self.max_tokens, "temperature": 0},
+            inferenceConfig={"maxTokens": self.max_tokens},
             toolConfig={"tools": [{"toolSpec": {"name": tool_name, "description": "Record the result.",
                                                 "inputSchema": {"json": schema}}}],
-                        "toolChoice": {"tool": {"name": tool_name}}},
+                        "toolChoice": choice},
         )
         blocks = resp["output"]["message"]["content"]
-        result = next(b["toolUse"]["input"] for b in blocks if "toolUse" in b)
+        result = pick_tool_input([{"type": "tool_use", "name": b["toolUse"]["name"], "input": b["toolUse"]["input"]}
+                                  if "toolUse" in b else {"type": "text", "text": b.get("text", "")}
+                                  for b in blocks], tool_name)
         u = resp.get("usage", {})
         return result, LLMUsage(self.model_id, u.get("inputTokens", 0), u.get("outputTokens", 0),
                                 int((time.perf_counter() - t0) * 1000))

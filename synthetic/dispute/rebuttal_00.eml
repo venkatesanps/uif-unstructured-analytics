@@ -2,9 +2,9 @@ From: billing@ridgeline-example.com
 To: disputes@bank-example.com
 Subject: Dispute response CB-2026-343224
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6044591676893042278=="
+Content-Type: multipart/mixed; boundary="===============7211458399377876922=="
 
---===============6044591676893042278==
+--===============7211458399377876922==
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -28,7 +28,7 @@ Attachments:
 
 Billing contact: 469-555-0110
 
---===============6044591676893042278==
+--===============7211458399377876922==
 Content-Type: application/pdf
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="invoice.pdf"
@@ -45,8 +45,8 @@ PDwKL0ZvbnQgMSAwIFIgL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1h
 Z2VJIF0KPj4gL1JvdGF0ZSAwIC9UcmFucyA8PAoKPj4gCiAgL1R5cGUgL1BhZ2UKPj4KZW5kb2Jq
 CjUgMCBvYmoKPDwKL1BhZ2VNb2RlIC9Vc2VOb25lIC9QYWdlcyA3IDAgUiAvVHlwZSAvQ2F0YWxv
 Zwo+PgplbmRvYmoKNiAwIG9iago8PAovQXV0aG9yIChhbm9ueW1vdXMpIC9DcmVhdGlvbkRhdGUg
-KEQ6MjAyNjEwMTMxODQ1MTMtMDUnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMg
-KCkgL01vZERhdGUgKEQ6MjAyNjEwMTMxODQ1MTMtMDUnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExh
+KEQ6MjAyNjEwMTMxOTAwNTEtMDUnMDAnKSAvQ3JlYXRvciAoYW5vbnltb3VzKSAvS2V5d29yZHMg
+KCkgL01vZERhdGUgKEQ6MjAyNjEwMTMxOTAwNTEtMDUnMDAnKSAvUHJvZHVjZXIgKFJlcG9ydExh
 YiBQREYgTGlicmFyeSAtIFwob3BlbnNvdXJjZVwpKSAKICAvU3ViamVjdCAodW5zcGVjaWZpZWQp
 IC9UaXRsZSAodW50aXRsZWQpIC9UcmFwcGVkIC9GYWxzZQo+PgplbmRvYmoKNyAwIG9iago8PAov
 Q291bnQgMSAvS2lkcyBbIDQgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iago4IDAgb2JqCjw8
@@ -61,12 +61,12 @@ KypXND42fj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA5CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAw
 MDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDAyMDkgMDAwMDAgbiAK
 MDAwMDAwMDMyMSAwMDAwMCBuIAowMDAwMDAwNTE0IDAwMDAwIG4gCjAwMDAwMDA1ODIgMDAwMDAg
 biAKMDAwMDAwMDg0MyAwMDAwMCBuIAowMDAwMDAwOTAyIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lE
-IApbPDRmNmYxNDk3MDRkMmJhOWM4Y2VlZGU4YzBiMjgwZDk1Pjw0ZjZmMTQ5NzA0ZDJiYTljOGNl
-ZWRlOGMwYjI4MGQ5NT5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGln
+IApbPDVmZWMyZTA2YjcxMTc1ZjgzOGQyNWE5NTg0ZWFmODAxPjw1ZmVjMmUwNmI3MTE3NWY4Mzhk
+MjVhOTU4NGVhZjgwMT5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGln
 ZXN0IChvcGVuc291cmNlKQoKL0luZm8gNiAwIFIKL1Jvb3QgNSAwIFIKL1NpemUgOQo+PgpzdGFy
 dHhyZWYKMTMzNgolJUVPRgo=
 
---===============6044591676893042278==
+--===============7211458399377876922==
 Content-Type: image/png
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="proof_of_delivery.png"
@@ -315,4 +315,4 @@ WSIFQJZIAZAlUgBkiRQAWSIFQJZIAZAlUgBkiRQAWSIFQJZIAZAlUgBkiRQAWSIFQJZIAZAlUgBk
 iRQAWSIFQJZIAZAlUgBkiRQAWSIFQJZIAZAlUgBkiRQAWSIFQJZIAZAlUgBkiRQAWSIFQJZIAZAl
 UgBk/T/VMfsHX2kX0wAAAABJRU5ErkJggg==
 
---===============6044591676893042278==--
+--===============7211458399377876922==--

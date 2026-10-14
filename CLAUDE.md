@@ -7,6 +7,7 @@ facts → Snowflake analytics. Design doc: "Merchant Services Unstructured-Data 
 1. **No real merchant data on a laptop.** Local runs use `synthetic/` or fully redacted files only.
 2. **Guard before model.** Nothing under `raw/` or `restricted/` is ever passed to an LLM, logged, or
    published. Only `guarded/` text reaches a model. Never weaken `RegexGuard` patterns without a test.
+   After ANY guard change, run `uif reguard`, then rerun with `--force`: stored outputs keep what the old guard missed.
 3. **Evidence or it didn't happen.** Every extracted value carries page + verbatim quote + confidence.
    Do not relax grounding or `value_in_quote` checks in `steps/validate.py` to make a test pass.
 4. **Schema-first.** New behaviour for a document type goes in `registry/doc_types/<type>/`
@@ -34,7 +35,8 @@ facts → Snowflake analytics. Design doc: "Merchant Services Unstructured-Data 
 make setup          # venv + deps
 make synth          # regenerate synthetic/ and data/merchant_master.csv
 make run            # process synthetic/ locally with the rules baseline
-make eval           # golden metrics + gates (LLM=ollama make eval for the local model)
+make eval           # golden metrics + gates (LLM=handoff | anthropic | ollama for model-backed)
+make eval-replay    # replay saved agent answers (CI)
 make test           # full suite (Ollama tests skip if no server)
 make ci             # what the pipeline runs
 ```

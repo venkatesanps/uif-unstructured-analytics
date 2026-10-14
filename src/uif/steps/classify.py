@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from uif.context import Context
 from uif.contracts import Classification, GuardedDoc, StepResult
+from uif.providers.handoff import HandoffPending
 from uif.providers.local import RulesExtractor
 from uif.registry import TAXONOMY_VERSION
 
@@ -16,7 +17,11 @@ def run(ctx: Context, doc_id: str) -> StepResult:
                             taxonomy_version=TAXONOMY_VERSION, method="keywords", model_id="rules-v1")
     llm = ctx.providers.llm
     if first.confidence < ctx.min_classify and not isinstance(llm, RulesExtractor):
-        second = llm.classify(doc.pages, candidates)
+        try:
+            second = llm.classify(doc.pages, candidates)
+        except HandoffPending as wait:
+            return StepResult(doc_id=doc_id, step="classify", ok=True, halt=True, pending=True,
+                              output_key=wait.key, detail=f"waiting for agent: {wait.request_id}")
         result = Classification(doc_id=doc_id, doc_type=second.doc_type, confidence=second.confidence,
                                 taxonomy_version=TAXONOMY_VERSION, method="llm", model_id=llm.model_id)
     if result.confidence < ctx.min_classify:

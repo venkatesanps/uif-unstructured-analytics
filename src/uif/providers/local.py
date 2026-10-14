@@ -66,6 +66,9 @@ class LocalStore:
     def uri(self, key: str) -> str:
         return f"file://{self._p(key)}"
 
+    def delete(self, key: str) -> None:
+        self._p(key).unlink(missing_ok=True)
+
 
 # --------------------------------------------------------------------------- OCR / normalize
 
@@ -166,7 +169,9 @@ class LocalOCR:
 # (USPS tracking numbers are 22 digits in groups of 4, and a 16-digit window can pass Luhn).
 _PAN = re.compile(r"(?<![\d-])(?<!\d[ -])(?:\d[ -]?){12,18}\d(?![\d-])(?![ -]\d{3})")
 _SSN = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
-_EMAIL = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
+# OCR often splits addresses ("disputes @ lakeside-example .com"); allow single spaces around @ and dots,
+# but require an alphabetic TLD so "qty 2 @ 5.00" is not taken for an email.
+_EMAIL = re.compile(r"\b[\w.+-]+ ?@ ?[\w-]+(?: ?\. ?[\w-]+)*? ?\. ?[A-Za-z]{2,}\b")
 _PHONE = re.compile(r"(?<!\d)(?:\+1[ .-]?)?\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}(?!\d)")
 _BANK = re.compile(r"(?i)(?:account|acct|routing)\s*(?:number|no\.?|#)?\s*[:#]?\s*(\d{6,17})")
 _NOT_A_CARD_CONTEXT = re.compile(r"(?i)(mid|merchant\s*id|merchant\s*number|tid|terminal|invoice|order|tracking)\W{0,4}$")

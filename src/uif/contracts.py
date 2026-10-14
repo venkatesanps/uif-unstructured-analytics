@@ -165,3 +165,4 @@ class StepResult(BaseModel):
     output_key: str | None = None
     detail: str | None = None
     halt: bool = False  # stop the pipeline for this doc (e.g. quarantined)
+    pending: bool = False  # waiting on an external agent (handoff); rerun to resume

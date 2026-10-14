@@ -1,0 +1,69 @@
+{
+ "request_id": "577fbed8e26f0c73",
+ "agent": "claude-opus-5.5 (this session, acting as handoff agent)",
+ "fields": {
+  "processor_name": {
+   "value": "Gulf Coast Card Processing",
+   "page": 1,
+   "quote": "Gulf Coast Card Processing",
+   "confidence": 0.9
+  },
+  "merchant_legal_name": {
+   "value": "Gulfview Gadget Outlet LLC",
+   "page": 1,
+   "quote": "account summary for Gulfview Gadget Outlet LLC",
+   "confidence": 0.9
+  },
+  "mid": {
+   "value": "800099999999",
+   "page": 1,
+   "quote": "Merchant # 800099999999",
+   "confidence": 0.9
+  },
+  "statement_period": {
+   "value": {
+    "start": "2026-06-01",
+    "end": "2026-06-30"
+   },
+   "page": 1,
+   "quote": "For the month of June 2026",
+   "confidence": 0.9
+  },
+  "gross_volume": {
+   "value": 247314.34,
+   "page": 1,
+   "quote": "Sales Amount ............ $247,314.34",
+   "confidence": 0.9
+  },
+  "transaction_count": {
+   "value": 4001,
+   "page": 1,
+   "quote": "Txn Count ............... 4,001",
+   "confidence": 0.9
+  },
+  "refund_volume": {
+   "value": 2800.94,
+   "page": 1,
+   "quote": "Returns ................. $2,800.94",
+   "confidence": 0.88
+  },
+  "chargeback_count": {
+   "value": 49,
+   "page": 1,
+   "quote": "Disputes ................ 49",
+   "confidence": 0.88
+  },
+  "chargeback_volume": {
+   "value": 3028.42,
+   "page": 1,
+   "quote": "Disputed $ .............. $3,028.42",
+   "confidence": 0.88
+  },
+  "total_fees": {
+   "value": 7189.72,
+   "page": 1,
+   "quote": "Fees Charged ............ $7,189.72",
+   "confidence": 0.9
+  }
+ }
+}

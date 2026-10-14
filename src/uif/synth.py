@@ -433,7 +433,9 @@ def generate(out: str | Path, n: int = 12, seed: int = 7) -> dict:
         (out / "merchant" / name).write_bytes(pdf)
         labels.append({"file": f"merchant/{name}", "source_group": "merchant", "doc_type": "processor_statement",
                        "fields": fields, "merchant_id": merchant[0] if merchant in MERCHANTS else None,
-                       "flags": flags, "raw_identifiers": [PLANTED_PAN.replace(" ", "")] if "planted_pan" in flags else []})
+                       "flags": flags,
+                       "raw_identifiers": ([PLANTED_PAN.replace(" ", "")] if "planted_pan" in flags else [])
+                       + (["disputes@lakeside-example.com"] if layout == "B" else [])})
 
     actions = ["monitor", "reserve", "reduce_limit", "escalate", "approve", "terminate"]
     for i in range(n_notes):
@@ -477,7 +479,7 @@ def generate(out: str | Path, n: int = 12, seed: int = 7) -> dict:
         name, data, lab = _packet(rng, i, merchant, scenario, as_email=i in (0, 3, 5))
         (out / "dispute" / name).write_bytes(data)
         labels.append({"file": f"dispute/{name}", "source_group": "merchant", "doc_type": "dispute_rebuttal",
-                       "merchant_id": merchant[0] if scenario[4] != "unseen_layout" else None, **lab})
+                       "merchant_id": merchant[0], **lab})  # ground truth, even where the baseline can't find it
         complete = not lab["missing_required_evidence"]
         won = rng.random() < (0.8 if complete else 0.3)
         outcomes.append((lab["fields"]["case_number"], "pending" if scenario[4] == "unseen_layout"

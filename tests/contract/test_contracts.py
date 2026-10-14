@@ -50,27 +50,37 @@ def test_response_schema_requires_evidence_for_every_field(ctx):
 
 
 class _FakeBedrock:
-    def __init__(self, tool_input):
-        self.tool_input, self.calls = tool_input, []
+    def __init__(self, blocks):
+        self.blocks, self.calls = blocks, []
 
     def converse(self, **kw):
         self.calls.append(kw)
-        return {"output": {"message": {"content": [{"toolUse": {"name": "x", "input": self.tool_input}}]}},
+        return {"output": {"message": {"content": self.blocks}},
                 "usage": {"inputTokens": 1200, "outputTokens": 300}}
 
 
-def test_bedrock_adapter_forces_tool_and_coerces_shape(ctx):
+def test_bedrock_adapter_uses_auto_tool_choice_and_coerces_shape(ctx):
     dt = ctx.registry.get("processor_statement")
-    fake = _FakeBedrock({"gross_volume": {"value": 10.5, "page": 1, "quote": "Gross Sales $10.50",
-                                          "confidence": 0.97}, "bogus_field": {"value": 1}})
+    fake = _FakeBedrock([{"toolUse": {"name": "record_extraction", "input": {
+        "gross_volume": {"value": 10.5, "page": 1, "quote": "Gross Sales $10.50", "confidence": 0.97},
+        "bogus_field": {"value": 1}}}}])
     out = BedrockLLM("test-model", client=fake).extract([], dt)
     call = fake.calls[0]
-    assert call["toolConfig"]["toolChoice"] == {"tool": {"name": "record_extraction"}}
-    assert call["inferenceConfig"]["temperature"] == 0
+    assert call["toolConfig"]["toolChoice"] == {"auto": {}}      # forced tools 400 on newest models
+    assert "record_extraction" in call["system"][0]["text"]       # told to call the tool instead
     assert set(out.fields) == set(dt.fields)          # unknown keys dropped, missing ones filled
     assert out.fields["gross_volume"]["value"] == 10.5
     assert out.fields["mid"] == {"value": None, "page": None, "quote": None, "confidence": 0.0}
     assert out.usage.tokens_in == 1200
+
+
+def test_bedrock_adapter_falls_back_to_json_text(ctx):
+    dt = ctx.registry.get("processor_statement")
+    fake = _FakeBedrock([{"text": 'Here you go: {"gross_volume": {"value": 7, "page": 2, "quote": "q", '
+                                  '"confidence": 0.9}}'}])
+    out = BedrockLLM("m", client=fake, tool_choice="tool").extract([], dt)
+    assert fake.calls[0]["toolConfig"]["toolChoice"] == {"tool": {"name": "record_extraction"}}
+    assert out.fields["gross_volume"]["value"] == 7
 
 
 def test_state_machine_runs_pipeline_steps_in_order():

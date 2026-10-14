@@ -20,6 +20,7 @@ llm:
   bedrock:
     model_id: ${UIF_BEDROCK_MODEL_ID}   # your approved Claude model or inference profile
     max_tokens: 4096
+    tool_choice: auto                     # newest Claude models reject a forced tool
 
 warehouse:
   kind: stage             # NDJSON per table under publish/, loaded by Snowpipe
